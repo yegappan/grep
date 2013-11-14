@@ -1,12 +1,13 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
-" Version: 1.8
-" Last Modified: March 11, 2007
+" Version: 1.9
+" Last Modified: September 10, 2007
 " 
 " Overview
 " --------
 " The grep plugin integrates the grep, fgrep, egrep, and agrep tools with
-" Vim.
+" Vim and allows you to search for a pattern in one or more files and jump
+" to them.
 "
 " To use this plugin, you need the grep, fgrep, egrep, agrep, find and
 " xargs utilities. These tools are present in most of the Unix installations.
@@ -25,7 +26,7 @@
 "       :help add-plugin
 "       :help add-global-plugin
 "       :help runtimepath
-" 2. If the grep utility is not already present in one of the directories
+" 2. If the grep executables are not already present in one of the directories
 "    in the PATH environment variable, then set the Grep_Path and other _Path
 "    variables to point to the location of the grep utilites in the .vimrc
 "    file.
@@ -37,17 +38,37 @@
 " -----
 " The grep.vim plugin introduces the following Vim commands:
 "
-" :Grep        - Search for the specified pattern in the specified files
-" :Rgrep       - Run recursive grep
-" :GrepBuffer  - Search for a pattern on all open buffers
-" :Bgrep       - Same as :GrepBuffer
-" :GrepArgs    - Search for a pattern on all the Vim argument filenames (:args)
-" :Fgrep       - Run fgrep
-" :Rfgrep      - Run recursive fgrep
-" :Egrep       - Run egrep
-" :Regrep      - Run recursive egrep
-" :Agrep       - Run agrep
-" :Ragrep      - Run recursive agrep
+" :Grep          - Search for the specified pattern in the specified files
+" :GrepAdd       - Same as ":Grep" but adds the results to the current results
+" :Rgrep         - Run recursive grep
+" :RgrepAdd      - Same as ":Rgrep" but adds the results to the current results
+" :GrepBuffer    - Search for a pattern on all open buffers
+" :GrepBufferAdd - Same as ":GrepBuffer" but adds the results to the current
+"                  results
+" :Bgrep         - Same as :GrepBuffer
+" :BgrepAdd      - Same as :GrepBufferAdd
+" :GrepArgs      - Search for a pattern on all the Vim argument 
+"                  filenames (:args)
+" :GrepArgsAdd   - Same as ":GrepArgs" but adds the results to the current
+"                  results
+" :Fgrep         - Run fgrep
+" :FgrepAdd      - Same as ":Fgrep" but adds the results to the current
+"                  results
+" :Rfgrep        - Run recursive fgrep
+" :RfgrepAdd     - Same as ":Rfgrep" but adds the results to the current
+"                  results
+" :Egrep         - Run egrep
+" :EgrepAdd      - Same as ":Egrep" but adds the results to the current
+"                  results
+" :Regrep        - Run recursive egrep
+" :RegrepAdd     - Same as ":Regrep" but adds the results to the current
+"                  results
+" :Agrep         - Run agrep
+" :AgrepAdd      - Same as ":Agrep" but adds the results to the current
+"                  results
+" :Ragrep        - Run recursive agrep
+" :RagrepAdd     - Same as ":Ragrep" but adds the results to the current
+"                  results
 "
 " The above commands can be invoked like this:
 "
@@ -60,9 +81,22 @@
 "    :Agrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
 "    :Ragrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
 "
+"    :GrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :RgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :FgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :RfgrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :EgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :RegrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :AgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :RagrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"
 "    :GrepBuffer [<grep_options>] [<search_pattern>]
 "    :Bgrep [<grep_options>] [<search_pattern>]
 "    :GrepArgs [<grep_options>] [<search_pattern>]
+"
+"    :GrepBufferAdd [<grep_options>] [<search_pattern>]
+"    :BgrepAdd [<grep_options>] [<search_pattern>]
+"    :GrepArgsAdd [<grep_options>] [<search_pattern>]
 "
 " In the above commands, all the arguments are optional.
 "
@@ -107,6 +141,11 @@
 " you are prompted for a search pattern or file names or a directory by
 " pressing the <Esc> key. You cannot cancel (or kill) the
 " grep/fgrep/egrep/agrep commands after the external command is invoked.
+"
+" The GrepAdd, RgrepAdd and other *Add commands append the search output to
+" the current search output. This is useful if you want to see the search
+" results for multiple patterns at the same time. These commands are available
+" only in Vim version 7.0 and above.
 "
 " You can map a key to invoke any of the above commands. For example, the
 " following map invokes the :Grep command to search for the keyword under the
@@ -212,6 +251,14 @@
 "
 "       :let Grep_Find_Use_Xargs = 0
 " 
+" To handle file names with space characters in them, the xargs utility
+" is invoked with the '--null' argument. If the xargs utility in your system
+" doesn't accept the '--null' argument, then you can change the
+" Grep_Xargs_Options variable. For example, to use the '--print0' xargs
+" argument, you can use the following command:
+"
+" 	:let Grep_Xargs_Options = '--print0'
+"
 " The Grep_Cygwin_Find variable should be set to 1, if you are using the find
 " utility from the cygwin package. This setting is used to handle the
 " difference between the backslash and forward slash path separators.
@@ -303,6 +350,11 @@ if !exists("Grep_Find_Use_Xargs")
     let Grep_Find_Use_Xargs = 1
 endif
 
+" The command-line arguments to supply to the xargs utility
+if !exists('Grep_Xargs_Options')
+    let Grep_Xargs_Options = '--null'
+endif
+
 " The find utility is from the cygwin package or some other find utility.
 if !exists("Grep_Cygwin_Find")
     let Grep_Cygwin_Find = 0
@@ -351,7 +403,7 @@ endif
 
 " RunGrepCmd()
 " Run the specified grep command using the supplied pattern
-function! s:RunGrepCmd(cmd, pattern)
+function! s:RunGrepCmd(cmd, pattern, action)
     let cmd_output = system(a:cmd)
 
     if cmd_output == ""
@@ -376,10 +428,14 @@ function! s:RunGrepCmd(cmd, pattern)
     let old_efm = &efm
     set efm=%f:%\\s%#%l:%m
 
-    if exists(":cgetfile")
-        execute "silent! cgetfile " . tmpfile
+    if v:version >= 700 && a:action == 'add'
+        execute "silent! caddfile " . tmpfile
     else
-        execute "silent! cfile " . tmpfile
+        if exists(":cgetfile")
+            execute "silent! cgetfile " . tmpfile
+        else
+            execute "silent! cfile " . tmpfile
+        endif
     endif
 
     let &efm = old_efm
@@ -395,7 +451,7 @@ endfunction
 
 " RunGrepRecursive()
 " Run specified grep command recursively
-function! s:RunGrepRecursive(cmd_name, grep_cmd, ...)
+function! s:RunGrepRecursive(cmd_name, grep_cmd, action, ...)
     if a:0 > 0 && (a:1 == "-?" || a:1 == "-h")
         echo 'Usage: ' . a:cmd_name . " [<grep_options>] [<search_pattern> " .
                         \ "[<file_name(s)>]]"
@@ -422,8 +478,11 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, ...)
         let grep_opt = g:Grep_Default_Options
     endif
 
-    " Don't display messages about non-existent files
-    let grep_opt = grep_opt . " -s"
+    if a:grep_cmd != 'agrep'
+        " Don't display messages about non-existent files
+        " Agrep doesn't support the -s option
+        let grep_opt = grep_opt . " -s"
+    endif
 
     if a:grep_cmd == 'grep'
         let grep_path = g:Grep_Path
@@ -436,7 +495,7 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, ...)
         let grep_expr_option = '-e'
     elseif a:grep_cmd == 'agrep'
         let grep_path = g:Agrep_Path
-        let grep_expr_option = '-e'
+        let grep_expr_option = ''
     else
         return
     endif
@@ -471,7 +530,6 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, ...)
             return
         endif
     endif
-    echo "\n"
 
     let txt = filepattern . ' '
     let find_file_pattern = ''
@@ -522,8 +580,9 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, ...)
         let cmd = cmd . " " . find_prune . " -prune -o"
         let cmd = cmd . " " . find_skip_files
         let cmd = cmd . " " . find_file_pattern
-        let cmd = cmd . " -print0 | " . g:Grep_Xargs_Path . " --null "
-        let cmd = cmd . grep_path . " " . grep_opt . " -n "
+        let cmd = cmd . " -print0 | "
+        let cmd = cmd . g:Grep_Xargs_Path . ' ' . g:Grep_Xargs_Options
+        let cmd = cmd . ' ' . grep_path . " " . grep_opt . " -n "
         let cmd = cmd . grep_expr_option . " " . pattern
         let cmd = cmd . ' ' . g:Grep_Null_Device 
     else
@@ -537,13 +596,13 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, ...)
                          \ g:Grep_Shell_Escape_Char . ';'
     endif
 
-    call s:RunGrepCmd(cmd, pattern)
+    call s:RunGrepCmd(cmd, pattern, a:action)
 endfunction
 
 " RunGrepSpecial()
 " Search for a pattern in all the opened buffers or filenames in the
 " argument list
-function! s:RunGrepSpecial(cmd_name, which, ...)
+function! s:RunGrepSpecial(cmd_name, which, action, ...)
     if a:0 > 0 && (a:1 == "-?" || a:1 == "-h")
         echo 'Usage: ' . a:cmd_name . " [<grep_options>] [<search_pattern>]"
         return
@@ -629,20 +688,18 @@ function! s:RunGrepSpecial(cmd_name, which, ...)
 
     let pattern = g:Grep_Shell_Quote_Char . pattern . g:Grep_Shell_Quote_Char
 
-    echo "\n"
-
     " Add /dev/null to the list of filenames, so that grep print the
     " filename and linenumber when grepping in a single file
     let filenames = filenames . " " . g:Grep_Null_Device
     let cmd = g:Grep_Path . " " . grep_opt . " -n -- "
     let cmd = cmd . pattern . " " . filenames
 
-    call s:RunGrepCmd(cmd, pattern)
+    call s:RunGrepCmd(cmd, pattern, a:action)
 endfunction
 
 " RunGrep()
 " Run the specified grep command
-function! s:RunGrep(cmd_name, grep_cmd, ...)
+function! s:RunGrep(cmd_name, grep_cmd, action, ...)
     if a:0 > 0 && (a:1 == "-?" || a:1 == "-h")
         echo 'Usage: ' . a:cmd_name . " [<grep_options>] [<search_pattern> " .
                         \ "[<file_name(s)>]]"
@@ -674,8 +731,11 @@ function! s:RunGrep(cmd_name, grep_cmd, ...)
         let grep_opt = g:Grep_Default_Options
     endif
 
-    " Don't display messages about non-existent files
-    let grep_opt = grep_opt . " -s"
+    if a:grep_cmd != 'agrep'
+        " Don't display messages about non-existent files
+        " Agrep doesn't support the -s option
+        let grep_opt = grep_opt . " -s"
+    endif
 
     if a:grep_cmd == 'grep'
         let grep_path = g:Grep_Path
@@ -688,7 +748,7 @@ function! s:RunGrep(cmd_name, grep_cmd, ...)
         let grep_expr_option = '-e'
     elseif a:grep_cmd == 'agrep'
         let grep_path = g:Agrep_Path
-        let grep_expr_option = '-e'
+        let grep_expr_option = ''
     else
         return
     endif
@@ -715,8 +775,6 @@ function! s:RunGrep(cmd_name, grep_cmd, ...)
         endif
     endif
 
-    echo "\n"
-
     " Add /dev/null to the list of filenames, so that grep print the
     " filename and linenumber when grepping in a single file
     let filenames = filenames . " " . g:Grep_Null_Device
@@ -724,33 +782,59 @@ function! s:RunGrep(cmd_name, grep_cmd, ...)
     let cmd = cmd . grep_expr_option . " " . pattern
     let cmd = cmd . " " . filenames
 
-    call s:RunGrepCmd(cmd, pattern)
+    call s:RunGrepCmd(cmd, pattern, a:action)
 endfunction
 
 " Define the set of grep commands
 command! -nargs=* -complete=file Grep
-            \ call s:RunGrep('Grep', 'grep', <f-args>)
+            \ call s:RunGrep('Grep', 'grep', 'set', <f-args>)
 command! -nargs=* -complete=file Rgrep
-            \ call s:RunGrepRecursive('Rgrep', 'grep', <f-args>)
+            \ call s:RunGrepRecursive('Rgrep', 'grep', 'set', <f-args>)
 command! -nargs=* GrepBuffer
-            \ call s:RunGrepSpecial('GrepBuffer', 'buffer', <f-args>)
+            \ call s:RunGrepSpecial('GrepBuffer', 'buffer', 'set', <f-args>)
 command! -nargs=* Bgrep
-            \ call s:RunGrepSpecial('Bgrep', 'buffer', <f-args>)
+            \ call s:RunGrepSpecial('Bgrep', 'buffer', 'set', <f-args>)
 command! -nargs=* GrepArgs
-            \ call s:RunGrepSpecial('GrepArgs', 'args', <f-args>)
+            \ call s:RunGrepSpecial('GrepArgs', 'args', 'set', <f-args>)
 
 command! -nargs=* -complete=file Fgrep
-            \ call s:RunGrep('Fgrep', 'fgrep', <f-args>)
+            \ call s:RunGrep('Fgrep', 'fgrep', 'set', <f-args>)
 command! -nargs=* -complete=file Rfgrep
-            \ call s:RunGrepRecursive('Rfgrep', 'fgrep', <f-args>)
+            \ call s:RunGrepRecursive('Rfgrep', 'fgrep', 'set', <f-args>)
 command! -nargs=* -complete=file Egrep
-            \ call s:RunGrep('Egrep', 'egrep', <f-args>)
+            \ call s:RunGrep('Egrep', 'egrep', 'set', <f-args>)
 command! -nargs=* -complete=file Regrep
-            \ call s:RunGrepRecursive('Regrep', 'egrep', <f-args>)
+            \ call s:RunGrepRecursive('Regrep', 'egrep', 'set', <f-args>)
 command! -nargs=* -complete=file Agrep
-            \ call s:RunGrep('Agrep', 'agrep', <f-args>)
+            \ call s:RunGrep('Agrep', 'agrep', 'set', <f-args>)
 command! -nargs=* -complete=file Ragrep
-            \ call s:RunGrepRecursive('Ragrep', 'agrep', <f-args>)
+            \ call s:RunGrepRecursive('Ragrep', 'agrep', 'set', <f-args>)
+
+if v:version >= 700
+command! -nargs=* -complete=file GrepAdd
+            \ call s:RunGrep('GrepAdd', 'grep', 'add', <f-args>)
+command! -nargs=* -complete=file RgrepAdd
+            \ call s:RunGrepRecursive('RgrepAdd', 'grep', 'add', <f-args>)
+command! -nargs=* GrepBufferAdd
+            \ call s:RunGrepSpecial('GrepBufferAdd', 'buffer', 'add', <f-args>)
+command! -nargs=* BgrepAdd
+            \ call s:RunGrepSpecial('BgrepAdd', 'buffer', 'add', <f-args>)
+command! -nargs=* GrepArgsAdd
+            \ call s:RunGrepSpecial('GrepArgsAdd', 'args', 'add', <f-args>)
+
+command! -nargs=* -complete=file FgrepAdd
+            \ call s:RunGrep('FgrepAdd', 'fgrep', 'add', <f-args>)
+command! -nargs=* -complete=file RfgrepAdd
+            \ call s:RunGrepRecursive('RfgrepAdd', 'fgrep', 'add', <f-args>)
+command! -nargs=* -complete=file EgrepAdd
+            \ call s:RunGrep('EgrepAdd', 'egrep', 'add', <f-args>)
+command! -nargs=* -complete=file RegrepAdd
+            \ call s:RunGrepRecursive('RegrepAdd', 'egrep', 'add', <f-args>)
+command! -nargs=* -complete=file AgrepAdd
+            \ call s:RunGrep('AgrepAdd', 'agrep', 'add', <f-args>)
+command! -nargs=* -complete=file RagrepAdd
+            \ call s:RunGrepRecursive('RagrepAdd', 'agrep', 'add', <f-args>)
+endif
 
 " Add the Tools->Search Files menu
 if has('gui_running')
