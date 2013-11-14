@@ -1,30 +1,34 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
-" Version: 1.7
-" Last Modified: June 16, 2006
+" Version: 1.8
+" Last Modified: March 11, 2007
 " 
 " Overview
 " --------
-" The grep.vim plugin script integrates the grep, fgrep, egrep, and agrep
-" tools with Vim. To use this script, you need the grep, fgrep, egrep, agrep,
-" find and xargs utilities. These tools are present in most of the Unix
-" installations. For MS-Windows systems, you can download these tools from the
-" following sites:
+" The grep plugin integrates the grep, fgrep, egrep, and agrep tools with
+" Vim.
 "
-"         http://gnuwin32.sourceforge.net
-"         http://unxutils.sourceforge.net
+" To use this plugin, you need the grep, fgrep, egrep, agrep, find and
+" xargs utilities. These tools are present in most of the Unix installations.
+" For MS-Windows systems, you can download the GNU grep and find utilities
+" from the following sites:
+"
+"    http://gnuwin32.sourceforge.net/packages/grep.htm
+"    http://gnuwin32.sourceforge.net/packages/findutils.htm
 "
 " Installation
 " ------------
 " 1. Copy the grep.vim file to the $HOME/.vim/plugin or $HOME/vimfiles/plugin
-"    directory. 
+"    or $VIM/vimfiles/plugin directory. 
 "    Refer to the following Vim help topics for more information about Vim
 "    plugins:
 "       :help add-plugin
 "       :help add-global-plugin
 "       :help runtimepath
-" 2. If the grep utility is not already in PATH, then set the Grep_Path
-"    and other _Path variables to point to the location of the grep utilites.
+" 2. If the grep utility is not already present in one of the directories
+"    in the PATH environment variable, then set the Grep_Path and other _Path
+"    variables to point to the location of the grep utilites in the .vimrc
+"    file.
 " 3. Restart Vim.
 " 4. You can now use the ":Grep" and other commands to search for patterns in
 "    files.
@@ -130,7 +134,7 @@
 " Configuration
 " -------------
 " By changing the following variables you can configure the behavior of this
-" script. Set the following variables in your .vimrc file using the 'let'
+" plugin. Set the following variables in your .vimrc file using the 'let'
 " command.
 "
 " The 'Grep_Path' variable is used to locate the grep utility. By default,
@@ -451,7 +455,11 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, ...)
     if g:Grep_Cygwin_Find == 1
         let cwd = substitute(cwd, "\\", "/", "g")
     endif
-    let startdir = input("Start searching from directory: ", cwd)
+    if v:version >= 700
+        let startdir = input("Start searching from directory: ", cwd, "dir")
+    else
+        let startdir = input("Start searching from directory: ", cwd)
+    endif
     if startdir == ""
         return
     endif
@@ -514,8 +522,8 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, ...)
         let cmd = cmd . " " . find_prune . " -prune -o"
         let cmd = cmd . " " . find_skip_files
         let cmd = cmd . " " . find_file_pattern
-        let cmd = cmd . " -print | " . g:Grep_Xargs_Path . " " . grep_path
-        let cmd = cmd . " " . grep_opt . " -n "
+        let cmd = cmd . " -print0 | " . g:Grep_Xargs_Path . " --null "
+        let cmd = cmd . grep_path . " " . grep_opt . " -n "
         let cmd = cmd . grep_expr_option . " " . pattern
         let cmd = cmd . ' ' . g:Grep_Null_Device 
     else
@@ -696,7 +704,12 @@ function! s:RunGrep(cmd_name, grep_cmd, ...)
     endif
 
     if filenames == ""
-        let filenames = input("Search in files: ", g:Grep_Default_Filelist)
+        if v:version >= 700
+            let filenames = input("Search in files: ", g:Grep_Default_Filelist,
+                        \ "file")
+        else
+            let filenames = input("Search in files: ", g:Grep_Default_Filelist)
+        endif
         if filenames == ""
             return
         endif
