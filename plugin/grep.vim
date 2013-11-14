@@ -1,7 +1,7 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
-" Version: 1.10
-" Last Modified: April 20, 2013
+" Version: 1.11
+" Last Modified: April 24, 2013
 " 
 " Overview
 " --------
@@ -197,7 +197,11 @@
 "       :let Agrep_Path = 'd:\tools\agrep.exe'
 "
 " The 'Grep_Find_Path' variable is used to locate the find utility. By
-" default, this is set to d:\tools\find.exe. You can change this using the let
+" default, this is set to 'find'. Note that on MS-Windows, there is a find.exe
+" that is part of the base OS. This find utility is different from the the
+" Unix find utility. You cannot use this utility with this plugin. You must
+" install the Unix compatible find utility and set the Grep_Find_Path variable
+" to point to the location of the utility. You can change this using the let
 " command:
 "
 "       :let Grep_Find_Path = 'd:\tools\find.exe'
@@ -499,7 +503,11 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, action, ...)
             let pattern = g:Grep_Shell_Quote_Char . a:{argcnt} . 
                             \ g:Grep_Shell_Quote_Char
         else
-            let filepattern = filepattern . " " . a:{argcnt}
+            if filepattern != ""
+                let filepattern = filepattern . " " . a:{argcnt}
+            else
+                let filepattern = a:{argcnt}
+            endif
         endif
         let argcnt= argcnt + 1
     endwhile
