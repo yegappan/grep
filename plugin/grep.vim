@@ -1,7 +1,7 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
-" Version: 1.4
-" Last Modified: October 27, 2004
+" Version: 1.5
+" Last Modified: October 30, 2004
 " 
 " Overview
 " --------
@@ -335,7 +335,11 @@ function! s:RunGrepCmd(cmd, pattern)
     let old_efm = &efm
     set efm=%f:%\\s%#%l:%m
 
-    execute "silent! cfile " . tmpfile
+    if exists(":cgetfile")
+        execute "silent! cgetfile " . tmpfile
+    else
+        execute "silent! cfile " . tmpfile
+    endif
 
     let &efm = old_efm
 
@@ -344,9 +348,6 @@ function! s:RunGrepCmd(cmd, pattern)
         " Open the quickfix window below the current window
         botright copen
     endif
-
-    " Jump to the first error
-    cc
 
     call delete(tmpfile)
 endfunction
