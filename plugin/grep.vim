@@ -560,6 +560,9 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, action, ...)
     if startdir == ""
         return
     endif
+    if startdir == cwd
+    	let startdir = "."
+    endif
     echo "\r"
 
     if filepattern == ""
