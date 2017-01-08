@@ -548,10 +548,11 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, action, ...)
         echo "\r"
     endif
 
-    let cwd = getcwd()
+    let shellslash_save = &shellslash
     if g:Grep_Cygwin_Find == 1
-        let cwd = substitute(cwd, "\\", "/", "g")
+        set shellslash
     endif
+    let cwd = getcwd()
     if v:version >= 700
         let startdir = input("Start searching from directory: ", cwd, "dir")
     else
@@ -560,6 +561,10 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, action, ...)
     if startdir == ""
         return
     endif
+    if has("unix") || &shellslash
+        let startdir = substitute(startdir, "\\", "", "g")
+    endif
+    let &shellslash = shellslash_save
     echo "\r"
 
     if filepattern == ""
