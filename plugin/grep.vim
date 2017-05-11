@@ -69,26 +69,36 @@
 " :Ragrep        - Run recursive agrep
 " :RagrepAdd     - Same as ":Ragrep" but adds the results to the current
 "                  results
+" :Tcgrep        - Run tcgrep
+" :TcgrepAdd     - Same as ":Tcgrep" but adds the results to the current
+"                  results
+" :Rtcgrep       - Run recursive tcgrep
+" :RtcgrepAdd    - Same as ":Rtcgrep" but adds the results to the current
+"                  results
 "
 " The above commands can be invoked like this:
 "
-"    :Grep   [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :Rgrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :Fgrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :Rfgrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :Egrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :Regrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :Agrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :Ragrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :Grep    [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :Rgrep   [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :Fgrep   [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :Rfgrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :Egrep   [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :Regrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :Agrep   [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :Ragrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :Tcgrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :Rtcgrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
 "
-"    :GrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :RgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :FgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :RfgrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :EgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :RegrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :AgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-"    :RagrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :GrepAdd    [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :RgrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :FgrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :RfgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :EgrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :RegrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :AgrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :RagrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :TcgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+"    :RtcgrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
 "
 "    :GrepBuffer [<grep_options>] [<search_pattern>]
 "    :Bgrep [<grep_options>] [<search_pattern>]
@@ -195,6 +205,11 @@
 " this is set to agrep. You can change this using the let command:
 "
 "       :let Agrep_Path = 'd:\tools\agrep.exe'
+"
+" The 'Tcgrep_Path' variable is used to locate the tcgrep utility. By default,
+" this is set to tcgrep. You can change this using the let command:
+"
+"       :let Tcgrep_Path = 'd:\tools\tcgrep.pl'
 "
 " The 'Grep_Find_Path' variable is used to locate the find utility. By
 " default, this is set to 'find'. Note that on MS-Windows, there is a find.exe
@@ -320,6 +335,13 @@ endif
 if !exists("Agrep_Path")
     let Agrep_Path = 'agrep'
 endif
+
+" Location of the tcgrep utility
+if !exists("Tcgrep_Path")
+    let Tcgrep_Path = '$VIM/vimfiles/tools/tcgrep.pl'
+endif
+
+let Tcgrep_Path = 'perl "' . expand(Tcgrep_Path, ":p"). '"'
 
 " Location of the find utility
 if !exists("Grep_Find_Path")
@@ -518,7 +540,11 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, action, ...)
     if a:grep_cmd != 'agrep'
         " Don't display messages about non-existent files
         " Agrep doesn't support the -s option
-        let grep_opt = grep_opt . " -s"
+	if a:grep_cmd != 'tcgrep'
+            let grep_opt = grep_opt . " -s"
+	else
+            let grep_opt = grep_opt . " -q"
+	endif
     endif
 
     if a:grep_cmd == 'grep'
@@ -532,6 +558,9 @@ function! s:RunGrepRecursive(cmd_name, grep_cmd, action, ...)
         let grep_expr_option = '-e'
     elseif a:grep_cmd == 'agrep'
         let grep_path = g:Agrep_Path
+        let grep_expr_option = ''
+    elseif a:grep_cmd == 'tcgrep'
+        let grep_path = g:Tcgrep_Path
         let grep_expr_option = ''
     else
         return
@@ -787,7 +816,11 @@ function! s:RunGrep(cmd_name, grep_cmd, action, ...)
     if a:grep_cmd != 'agrep'
         " Don't display messages about non-existent files
         " Agrep doesn't support the -s option
-        let grep_opt = grep_opt . " -s"
+	if a:grep_cmd != 'tcgrep'
+            let grep_opt = grep_opt . " -s"
+	else
+            let grep_opt = grep_opt . " -q"
+	endif
     endif
 
     if a:grep_cmd == 'grep'
@@ -801,6 +834,9 @@ function! s:RunGrep(cmd_name, grep_cmd, action, ...)
         let grep_expr_option = '-e'
     elseif a:grep_cmd == 'agrep'
         let grep_path = g:Agrep_Path
+        let grep_expr_option = ''
+    elseif a:grep_cmd == 'tcgrep'
+        let grep_path = g:Tcgrep_Path
         let grep_expr_option = ''
     else
         return
@@ -864,6 +900,10 @@ command! -nargs=* -complete=file Agrep
             \ call s:RunGrep('Agrep', 'agrep', 'set', <f-args>)
 command! -nargs=* -complete=file Ragrep
             \ call s:RunGrepRecursive('Ragrep', 'agrep', 'set', <f-args>)
+command! -nargs=* -complete=file Tcgrep
+            \ call s:RunGrep('Tcgrep', 'tcgrep', 'set', <f-args>)
+command! -nargs=* -complete=file Rtcgrep
+            \ call s:RunGrepRecursive('Rtcgrep', 'tcgrep', 'set', <f-args>)
 
 if v:version >= 700
 command! -nargs=* -complete=file GrepAdd
@@ -889,6 +929,10 @@ command! -nargs=* -complete=file AgrepAdd
             \ call s:RunGrep('AgrepAdd', 'agrep', 'add', <f-args>)
 command! -nargs=* -complete=file RagrepAdd
             \ call s:RunGrepRecursive('RagrepAdd', 'agrep', 'add', <f-args>)
+command! -nargs=* -complete=file TcgrepAdd
+            \ call s:RunGrep('TcgrepAdd', 'tcgrep', 'add', <f-args>)
+command! -nargs=* -complete=file RtcgrepAdd
+            \ call s:RunGrepRecursive('RtcgrepAdd', 'tcgrep', 'add', <f-args>)
 endif
 
 " Add the Tools->Search Files menu
