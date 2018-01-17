@@ -191,6 +191,7 @@ function! grep#cmd_exit_cb(job, exit_status)
 	    caddexpr emsg
 	endif
 	let s:grep_qf_id = 0
+	let s:grep_cmd_job = 0
 	call s:DeleteTempFile()
     endif
 endfunction
@@ -202,8 +203,6 @@ function! grep#runGrepCmdAsync(cmd, pattern, action)
 	" If the job is already running for some other search, stop it.
 	call job_stop(s:grep_cmd_job)
 	caddexpr '[Search command interrupted]'
-	call s:DeleteTempFile()
-	let s:grep_cmd_job = 0
     endif
 
     let title = '[Search results for ' . a:pattern . ']'
@@ -229,6 +228,13 @@ function! grep#runGrepCmdAsync(cmd, pattern, action)
 		    \ 'exit_cb' : function('grep#cmd_exit_cb')})
     endif
 
+    if job_status(s:grep_cmd_job) == 'fail'
+	let s:grep_cmd_job = 0
+	call s:WarnMsg('Error: Failed to start the grep command')
+	call s:DeleteTempFile()
+	return
+    endif
+
     " Open the grep output window
     if g:Grep_OpenQuickfixWindow == 1
 	" Open the quickfix window below the current window
@@ -239,6 +245,7 @@ endfunction
 " RunGrepCmd()
 " Run the specified grep command using the supplied pattern
 function! grep#runGrepCmd(cmd, pattern, action)
+    "echomsg 'Running grep cmd: ' . a:cmd
     if has('win32') && !has('win32unix') && (&shell =~ 'cmd.exe')
         " Windows does not correctly deal with commands that have more than 1
         " set of double quotes.  It will strip them all resulting in:
@@ -247,7 +254,7 @@ function! grep#runGrepCmd(cmd, pattern, action)
         " command inside a batch file and call the batch file.
         " Do this only on Win2K, WinXP and above.
 	let s:grep_tempfile = fnamemodify(tempname(), ':h') . '\mygrep.cmd'
-	call writefile([a:cmd], s:grep_tempfile, 'b')
+	call writefile(['@echo off', a:cmd], s:grep_tempfile)
 
 	if s:Use_Async_Grep
 	    call grep#runGrepCmdAsync(s:grep_tempfile, a:pattern, a:action)
@@ -429,6 +436,10 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
         return
     endif
     echo "\r"
+
+    if startdir == cwd
+	let startdir = '.'
+    endif
 
     if filenames == ''
         let filenames = input('Search in files matching pattern: ', 
