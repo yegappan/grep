@@ -1,7 +1,7 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.0
-" Last Modified: Jan 10, 2018
+" Last Modified: Jan 19, 2018
 " 
 " Plugin to integrate grep utilities with Vim
 
@@ -86,7 +86,7 @@ endif
 " Character to use to quote patterns and filenames before passing to grep.
 if !exists("Grep_Shell_Quote_Char")
     if has("win32")
-        let Grep_Shell_Quote_Char = ''
+        let Grep_Shell_Quote_Char = '"'
     else
         let Grep_Shell_Quote_Char = "'"
     endif
@@ -134,31 +134,7 @@ else
 endif
 
 let s:grep_cmd_job = 0
-let s:grep_qf_id = 0
 let s:grep_tempfile = ''
-
-" grep#cmd_output_cb()
-" Add output (single line) from a grep command to the quickfix list
-function! grep#cmd_output_cb(channel, msg)
-    if s:Grep_Use_QfID
-	" Check whether the quickfix list is still present
-	let l = getqflist({'id' : s:grep_qf_id})
-	if !has_key(l, 'id') || l.id == 0
-	    " Quickfix list is not present. Stop the search.
-	    call job_stop(s:grep_cmd_job)
-	    return
-	endif
-
-	call setqflist([], 'a', {'id' : s:grep_qf_id,
-		    \ 'efm' : '%f:%\s%#%l:%m',
-		    \ 'lines' : [a:msg]})
-    else
-	let old_efm = &efm
-	set efm=%f:%\\s%#%l:%m
-	caddexpr a:msg . "\n"
-	let &efm = old_efm
-    endif
-endfunction
 
 " DeleteTempFile()
 " Delete the temporary file created on MS-Windows to run the grep command
@@ -172,25 +148,63 @@ function! s:DeleteTempFile()
     endif
 endfunction
 
+" grep#cmd_output_cb()
+" Add output (single line) from a grep command to the quickfix list
+function! grep#cmd_output_cb(qf_id, channel, msg)
+    let job = ch_getjob(a:channel)
+    if job_status(job) == 'fail'
+	call WarnMsg('Error: Job not found in grep command output callback')
+	return
+    endif
+    if s:Grep_Use_QfID
+	" Check whether the quickfix list is still present
+	let l = getqflist({'id' : a:qf_id})
+	if !has_key(l, 'id') || l.id == 0
+	    " Quickfix list is not present. Stop the search.
+	    call job_stop(job)
+	    return
+	endif
+
+	call setqflist([], 'a', {'id' : a:qf_id,
+		    \ 'efm' : '%f:%\s%#%l:%m',
+		    \ 'lines' : [a:msg]})
+    else
+	let old_efm = &efm
+	set efm=%f:%\\s%#%l:%m
+	caddexpr a:msg . "\n"
+	let &efm = old_efm
+    endif
+endfunction
+
+" grep#chan_close_cb
+" Close callback for the grep command channel. No more grep output is
+" available.
+function! grep#chan_close_cb(qf_id, channel)
+    let job = ch_getjob(a:channel)
+    if job_status(job) == 'fail'
+	call WarnMsg('Error: Job not found in grep channel close callback')
+	return
+    endif
+    let emsg = '[Search command exited with status ' . job_info(job).exitval . ']'
+    if s:Grep_Use_QfID
+	" Check whether the quickfix list is still present
+	let l = getqflist({'id' : a:qf_id})
+	if has_key(l, 'id') && l.id == a:qf_id
+	    call setqflist([], 'a', {'id' : a:qf_id,
+			\ 'efm' : '%f:%\s%#%l:%m',
+			\ 'lines' : [emsg]})
+	endif
+    else
+	caddexpr emsg
+    endif
+endfunction
+
 " grep#cmd_exit_cb()
 " grep command exit handler
-function! grep#cmd_exit_cb(job, exit_status)
+function! grep#cmd_exit_cb(qf_id, job, exit_status)
     " Process the exit status only if the grep cmd is not interrupted
     " by another grep invocation
     if s:grep_cmd_job == a:job
-	let emsg = '[Search command exited with status ' . a:exit_status . ']'
-	if s:Grep_Use_QfID
-	    " Check whether the quickfix list is still present
-	    let l = getqflist({'id' : s:grep_qf_id})
-	    if has_key(l, 'id') && l.id == s:grep_qf_id
-		call setqflist([], 'a', {'id' : s:grep_qf_id,
-			    \ 'efm' : '%f:%\s%#%l:%m',
-			    \ 'lines' : [emsg]})
-	    endif
-	else
-	    caddexpr emsg
-	endif
-	let s:grep_qf_id = 0
 	let s:grep_cmd_job = 0
 	call s:DeleteTempFile()
     endif
@@ -212,21 +226,24 @@ function! grep#runGrepCmdAsync(cmd, pattern, action)
 	cexpr title . "\n"
     endif
     call setqflist([], 'a', {'title' : title})
-    if s:Grep_Use_QfID
-	" Save the quickfix list id, so that the grep output can be added to
-	" the correct quickfix list
-	let s:grep_qf_id = getqflist({'id' : 0}).id
+    " Save the quickfix list id, so that the grep output can be added to
+    " the correct quickfix list
+    let l = getqflist({'id' : 0})
+    if has_key(l, 'id')
+	let qf_id = l.id
+    else
+	let qf_id = -1
     endif
 
     if has('win32') && !has('win32unix') && (&shell =~ 'cmd.exe')
-	let s:grep_cmd_job = job_start([a:cmd],
-		    \ {'callback' : function('grep#cmd_output_cb'),
-		    \ 'exit_cb' : function('grep#cmd_exit_cb')})
+	let cmd_list = [a:cmd]
     else
-	let s:grep_cmd_job = job_start(['/bin/sh', '-c', a:cmd],
-		    \ {'callback' : function('grep#cmd_output_cb'),
-		    \ 'exit_cb' : function('grep#cmd_exit_cb')})
+	let cmd_list = ['/bin/sh', '-c', a:cmd]
     endif
+    let s:grep_cmd_job = job_start(cmd_list,
+		\ {'callback' : function('grep#cmd_output_cb', [qf_id]),
+		\ 'close_cb' : function('grep#chan_close_cb', [qf_id]),
+		\ 'exit_cb' : function('grep#cmd_exit_cb', [qf_id])})
 
     if job_status(s:grep_cmd_job) == 'fail'
 	let s:grep_cmd_job = 0

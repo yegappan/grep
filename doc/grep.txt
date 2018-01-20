@@ -2,7 +2,7 @@
 
 Author: Yegappan Lakshmanan  (yegappan AT yahoo DOT com)
 For Vim version 7.0 and above
-Last change: 2018 Jan 5
+Last change: 2018 Jan 17
 
 Overview					*grep-overview*
 
@@ -16,6 +16,8 @@ utilities from the following sites:
 
    http://gnuwin32.sourceforge.net/packages/grep.htm
    http://gnuwin32.sourceforge.net/packages/findutils.htm
+
+The github repository for this plugin is at http://github.com/yegappan/grep
 
 ==============================================================================
 Installation					*grep-installation*
