@@ -225,6 +225,7 @@ function! grep#runGrepCmdAsync(cmd, pattern, action)
     else
 	cexpr title . "\n"
     endif
+    "caddexpr 'Search cmd: ' . a:cmd
     call setqflist([], 'a', {'title' : title})
     " Save the quickfix list id, so that the grep output can be added to
     " the correct quickfix list
@@ -262,7 +263,6 @@ endfunction
 " RunGrepCmd()
 " Run the specified grep command using the supplied pattern
 function! grep#runGrepCmd(cmd, pattern, action)
-    "echomsg 'Running grep cmd: ' . a:cmd
     if has('win32') && !has('win32unix') && (&shell =~ 'cmd.exe')
         " Windows does not correctly deal with commands that have more than 1
         " set of double quotes.  It will strip them all resulting in:
@@ -347,8 +347,7 @@ function! s:GrepParseArgs(args, grep_cmd)
             let grep_opt = grep_opt . ' ' . one_arg
         elseif pattern == ''
             " Only one search pattern can be specified
-            let pattern = g:Grep_Shell_Quote_Char . one_arg . 
-                            \ g:Grep_Shell_Quote_Char
+            let pattern = shellescape(one_arg)
         else
             " More than one file patterns can be specified
             if filepattern != ''
@@ -439,8 +438,7 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
         if pattern == ''
             return
         endif
-        let pattern = g:Grep_Shell_Quote_Char . pattern . 
-                        \ g:Grep_Shell_Quote_Char
+        let pattern = shellescape(pattern)
         echo "\r"
     endif
 
@@ -473,7 +471,7 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
             let find_file_pattern = find_file_pattern . ' -o'
         endif
         let find_file_pattern = find_file_pattern . ' -name ' .
-              \ g:Grep_Shell_Quote_Char . one_pattern . g:Grep_Shell_Quote_Char
+              \ shellescape(one_pattern)
     endfor
     let find_file_pattern = g:Grep_Shell_Escape_Char . '(' .
                     \ find_file_pattern . ' ' . g:Grep_Shell_Escape_Char . ')'
@@ -485,8 +483,7 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
                 let find_prune = find_prune . ' -o'
             endif
             let find_prune = find_prune . ' -name ' .
-                        \ g:Grep_Shell_Quote_Char . one_dir .
-                        \ g:Grep_Shell_Quote_Char
+                        \ shellescape(one_dir)
         endfor
 
         let find_prune = '-type d ' . g:Grep_Shell_Escape_Char . '(' .
@@ -496,8 +493,7 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
     let find_skip_files = '-type f'
     for one_file in split(g:Grep_Skip_Files, ' ')
         let find_skip_files = find_skip_files . ' ! -name ' .
-                    \ g:Grep_Shell_Quote_Char . one_file .
-                    \ g:Grep_Shell_Quote_Char
+                    \ shellescape(one_file)
     endfor
 
     if g:Grep_Find_Use_Xargs == 1
@@ -588,7 +584,7 @@ function! grep#runGrepSpecial(cmd_name, which, action, ...)
         echo "\r"
     endif
 
-    let pattern = g:Grep_Shell_Quote_Char . pattern . g:Grep_Shell_Quote_Char
+    let pattern = shellescape(pattern)
 
     " Add /dev/null to the list of filenames, so that grep print the
     " filename and linenumber when grepping in a single file
@@ -621,8 +617,7 @@ function! grep#runGrep(cmd_name, grep_cmd, action, ...)
         if pattern == ''
             return
         endif
-        let pattern = g:Grep_Shell_Quote_Char . pattern .
-                        \ g:Grep_Shell_Quote_Char
+        let pattern = shellescape(pattern)
         echo "\r"
     endif
 
