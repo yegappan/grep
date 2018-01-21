@@ -42,7 +42,10 @@ command! -nargs=* -complete=file Agrep
 	\ call grep#runGrep('Agrep', 'agrep', 'set', <f-args>)
 command! -nargs=* -complete=file Ragrep
 	\ call grep#runGrepRecursive('Ragrep', 'agrep', 'set', <f-args>)
+command! -nargs=* -complete=file Ag
+	    \ call grep#runGrep('Ag', 'ag', 'set', <f-args>)
 
+" Commands to add to existing results list
 command! -nargs=* -complete=file GrepAdd
 	\ call grep#runGrep('GrepAdd', 'grep', 'add', <f-args>)
 command! -nargs=* -complete=file RgrepAdd
@@ -66,6 +69,8 @@ command! -nargs=* -complete=file AgrepAdd
 	\ call grep#runGrep('AgrepAdd', 'agrep', 'add', <f-args>)
 command! -nargs=* -complete=file RagrepAdd
 	\ call grep#runGrepRecursive('RagrepAdd', 'agrep', 'add', <f-args>)
+command! -nargs=* -complete=file AgAdd
+	\ call grep#runGrep('AgAdd', 'ag', 'add', <f-args>)
 
 " Add the Tools->Search Files menu
 if has('gui_running')

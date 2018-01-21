@@ -29,6 +29,11 @@ if !exists("Agrep_Path")
     let Agrep_Path = 'agrep'
 endif
 
+" Location of the Ag utility
+if !exists("Ag_Path")
+    let Ag_Path = 'ag'
+endif
+
 " Location of the find utility
 if !exists("Grep_Find_Path")
     let Grep_Find_Path = 'find'
@@ -157,11 +162,11 @@ function! grep#cmd_output_cb(qf_id, channel, msg)
 	endif
 
 	call setqflist([], 'a', {'id' : a:qf_id,
-		    \ 'efm' : '%f:%\s%#%l:%m',
+		    \ 'efm' : '%f:%\\s%#%l:%c:%m,%f:%\s%#%l:%m',
 		    \ 'lines' : [a:msg]})
     else
 	let old_efm = &efm
-	set efm=%f:%\\s%#%l:%m
+	set efm=%f:%\\s%#%l:%c:%m,%f:%\\s%#%l:%m
 	caddexpr a:msg . "\n"
 	let &efm = old_efm
     endif
@@ -303,7 +308,7 @@ function! grep#runGrepCmd(cmd, pattern, action)
     let &verbose = old_verbose
 
     let old_efm = &efm
-    set efm=%f:%\\s%#%l:%m
+    set efm=%f:%\\s%#%l:%c:%m,%f:%\\s%#%l:%m
 
     if a:action == 'add'
 	execute 'silent! caddfile ' . tmpfile
@@ -353,7 +358,9 @@ function! s:GrepParseArgs(args, grep_cmd)
 	let grep_opt = g:Grep_Default_Options
     endif
 
-    if a:grep_cmd != 'agrep'
+    if a:grep_cmd == 'ag'
+	let grep_opt = grep_opt . ' --vimgrep'
+    elseif a:grep_cmd != 'agrep'
 	" Don't display messages about non-existent files
 	" Agrep doesn't support the -s option
 	let grep_opt = grep_opt . ' -s'
@@ -375,7 +382,8 @@ function! s:GrepCmdToOption(grep_cmd)
     let cmd_to_option_map = {'grep':  [g:Grep_Path, '--'],
                            \ 'fgrep': [g:Fgrep_Path, '-e'],
                            \ 'egrep': [g:Egrep_Path, '-e'],
-                           \ 'agrep': [g:Agrep_Path, '']}
+                           \ 'agrep': [g:Agrep_Path, ''],
+			   \ 'ag' : [g:Ag_Path, '']}
 
     return cmd_to_option_map[a:grep_cmd]
 endfunction
@@ -495,6 +503,7 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
 		    \ shellescape(one_file)
     endfor
 
+    " On MS-Windows, convert the find/xargs program path to 8.3 style path
     if has('win32')
 	let g:Grep_Find_Path = fnamemodify(g:Grep_Find_Path, ':8')
 	let g:Grep_Xargs_Path = fnamemodify(g:Grep_Xargs_Path, ':8')
@@ -636,7 +645,10 @@ function! grep#runGrep(cmd_name, grep_cmd, action, ...)
 
     " Add /dev/null to the list of filenames, so that grep prints the
     " filename and line number when grepping in a single file
-    let filenames = filenames . ' ' . g:Grep_Null_Device
+    if a:grep_cmd != 'ag'
+	let filenames = filenames . ' ' . g:Grep_Null_Device
+    endif
+
     let cmd = grep_path . ' ' . grep_opt . ' -n ' .
 		\ grep_expr_option . ' ' . pattern . ' ' . filenames
 

@@ -14,7 +14,7 @@ Last change: 2018 Jan 21
 						*grep-overview*
 1. Overview~
 
-The grep plugin integrates the grep, fgrep, egrep, and agrep tools with Vim
+The grep plugin integrates the grep, fgrep, egrep, agrep and ag tools with Vim
 and allows you to search for a pattern in one or more files and jump to them.
 
 To use this plugin, you need the grep, fgrep, egrep, agrep, find and xargs
@@ -22,8 +22,13 @@ utilities. These tools are present in most of the Unix and MacOS
 installations.  For MS-Windows systems, you can download the GNU grep and find
 utilities from the following sites:
 
-   http://gnuwin32.sourceforge.net/packages/grep.htm
-   http://gnuwin32.sourceforge.net/packages/findutils.htm
+  http://gnuwin32.sourceforge.net/packages/grep.htm
+  http://gnuwin32.sourceforge.net/packages/findutils.htm
+
+If you want to use the Silver Searcher (ag) with this plugin, then you can
+download it from:
+
+  https://github.com/ggreer/the_silver_searcher
 
 The github repository for this plugin is at http://github.com/yegappan/grep
 
@@ -77,6 +82,9 @@ The grep.vim plugin introduces the following Vim commands:
                  results
 :Ragrep        - Run recursive agrep
 :RagrepAdd     - Same as ":Ragrep" but adds the results to the current
+                 results
+:Ag            - Run ag
+:AgAdd         - Same as ":Ag" but adds the results to the current
                  results
 
 The above commands can be invoked like this:
@@ -209,6 +217,11 @@ this is set to agrep. You can change this using the let command:
 
       :let Agrep_Path = 'C:\Progra~1\Grep\agrep.exe'
 
+The 'Ag_Path' variable is used to locate the ag (silver searcher) utility. By
+default, this is set to ag. You can change this using the let command:
+
+      :let Ag_Path = 'C:\Progra~1\Silver_Searcher\ag.exe'
+
 The 'Grep_Find_Path' variable is used to locate the find utility. By default,
 this is set to 'find'. Note that on MS-Windows, there is a find.exe that is
 part of the base OS. This find utility is different from the the Unix find
@@ -233,8 +246,8 @@ can change this settings using the let command:
       :let Grep_Default_Filelist = '*.c *.cpp *.asm'
 
 The 'Grep_Default_Options' is used to pass default command line options to the
-grep/fgrep/egrep/agrep utilities. By default, this is set to an empty string.
-You can change this using the let command:
+grep/fgrep/egrep/agrep/ag utilities. By default, this is set to an empty
+string.  You can change this using the let command:
 
       :let Grep_Default_Options = '-i'
 
