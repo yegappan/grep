@@ -1,7 +1,7 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.0
-" Last Modified: Jan 19, 2018
+" Last Modified: Jan 21, 2018
 " 
 " Plugin to integrate grep utilities with Vim
 
@@ -76,25 +76,16 @@ endif
 " print the name of the file, if only one filename is supplied. We need the
 " filename for Vim quickfix processing.
 if !exists("Grep_Null_Device")
-    if has("win32")
+    if has('win32')
         let Grep_Null_Device = 'NUL'
     else
         let Grep_Null_Device = '/dev/null'
     endif
 endif
 
-" Character to use to quote patterns and filenames before passing to grep.
-if !exists("Grep_Shell_Quote_Char")
-    if has("win32")
-        let Grep_Shell_Quote_Char = '"'
-    else
-        let Grep_Shell_Quote_Char = "'"
-    endif
-endif
-
 " Character to use to escape special characters before passing to grep.
 if !exists("Grep_Shell_Escape_Char")
-    if has("win32")
+    if has('win32')
         let Grep_Shell_Escape_Char = ''
     else
         let Grep_Shell_Escape_Char = '\'
@@ -342,7 +333,7 @@ function! s:GrepParseArgs(args, grep_cmd)
     let filepattern = ''
 
     for one_arg in a:args
-        if one_arg =~ '^-' && pattern == ''
+        if one_arg[0] == '-' && pattern == ''
             " Process grep arguments at the beginning of the argument list
             let grep_opt = grep_opt . ' ' . one_arg
         elseif pattern == ''
@@ -373,6 +364,14 @@ endfunction
 
 function! s:GrepCmdToOption(grep_cmd)
     " Get the program path and the option to specify the search pattern
+    if has('win32')
+	" On MS-Windows, convert the program pathname to 8.3 style pathname.
+	" Otherwise, using a path with space characters causes problems.
+	let g:Grep_Path = fnamemodify(g:Grep_Path, ':8')
+	let g:Fgrep_Path = fnamemodify(g:Fgrep_Path, ':8')
+	let g:Egrep_Path = fnamemodify(g:Egrep_Path, ':8')
+	let g:Agrep_Path = fnamemodify(g:Agrep_Path, ':8')
+    endif
     let cmd_to_option_map = {'grep':  [g:Grep_Path, '--'],
                            \ 'fgrep': [g:Fgrep_Path, '-e'],
                            \ 'egrep': [g:Egrep_Path, '-e'],
@@ -495,6 +494,11 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
         let find_skip_files = find_skip_files . ' ! -name ' .
                     \ shellescape(one_file)
     endfor
+
+    if has('win32')
+	let g:Grep_Find_Path = fnameescape(g:Grep_Find_Path, ':8')
+	let g:Grep_Xargs_Path = fnameescape(g:Grep_Xargs_Path, ':8')
+    endif
 
     if g:Grep_Find_Use_Xargs == 1
         let cmd = g:Grep_Find_Path . ' "' . startdir . '"'

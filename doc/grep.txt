@@ -2,7 +2,7 @@
 
 Author: Yegappan Lakshmanan  (yegappan AT yahoo DOT com)
 For Vim version 7.0 and above
-Last change: 2018 Jan 17
+Last change: 2018 Jan 21
 
 Overview					*grep-overview*
 
@@ -113,9 +113,8 @@ to enter a search pattern. By default, the keyword under the cursor is
 displayed for the search pattern prompt. You can accept the default or modify
 it.
 
-The search pattern is automatically enclosed by the character specified in the
-Grep_Shell_Quote_Char variable. You should not enclose the search pattern with
-a shell escape character.
+The search pattern is automatically enclosed by the escape character. You
+should not enclose the search pattern with a shell escape character.
 
 If you want to specify a search pattern with space characters or a multi-word
 pattern, then you should run the Grep command without any arguments and use
@@ -186,22 +185,22 @@ command.
 The 'Grep_Path' variable is used to locate the grep utility. By default, this
 is set to grep. You can change this using the let command:
 
-      :let Grep_Path = 'd:\tools\grep.exe'
+      :let Grep_Path = 'C:\Progra~1\Grep\grep.exe'
 
 The 'Fgrep_Path' variable is used to locate the fgrep utility. By default,
 this is set to fgrep. You can change this using the let command:
 
-      :let Fgrep_Path = 'd:\tools\fgrep.exe'
+      :let Fgrep_Path = 'C:\Progra~1\Grep\fgrep.exe'
 
 The 'Egrep_Path' variable is used to locate the egrep utility. By default,
 this is set to egrep. You can change this using the let command:
 
-      :let Egrep_Path = 'd:\tools\egrep.exe'
+      :let Egrep_Path = 'C:\Progra~1\Grep\egrep.exe'
 
 The 'Agrep_Path' variable is used to locate the agrep utility. By default,
 this is set to agrep. You can change this using the let command:
 
-      :let Agrep_Path = 'd:\tools\agrep.exe'
+      :let Agrep_Path = 'C:\Progra~1\Grep\agrep.exe'
 
 The 'Grep_Find_Path' variable is used to locate the find utility. By default,
 this is set to 'find'. Note that on MS-Windows, there is a find.exe that is
@@ -210,12 +209,12 @@ utility. You cannot use this utility with this plugin. You must install the
 Unix compatible find utility and set the Grep_Find_Path variable to point to
 the location of the utility. You can change this using the let command:
 
-      :let Grep_Find_Path = 'd:\tools\find.exe'
+      :let Grep_Find_Path = 'C:\Progra~1\Grep\find.exe'
 
 The 'Grep_Xargs_Path' variable is used to locate the xargs utility. By
 default, this is set to xargs. You can change this using the let command:
 
-      :let Grep_Xargs_Path = 'd:\tools\xargs.exe'
+      :let Grep_Xargs_Path = 'C:\Progra~1\Grep\xargs.exe'
 
 When running any one of the Grep commands, you will be prompted for the files
 in which to search for the pattern. The 'Grep_Default_Filelist' variable is
@@ -281,13 +280,6 @@ For Unix systems, this is set to /dev/null and for MS-Windows systems, this is
 set to NUL. You can modify this by using the let command:
 
       :let Grep_Null_Device = '/dev/null'
-
-The 'Grep_Shell_Quote_Char' variable specifies the quote character to use for
-protecting patterns from being interpreted by the shell. For Unix systems,
-this is set to "'" and for MS-Window systems, this is set to an empty string.
-You can change this using the let command:
-
-      :let Grep_Shell_Quote_Char = "'"
 
 The 'Grep_Shell_Escape_Char' variable specifies the escape character to use
 for protecting special characters from being interpreted by the shell.  For
