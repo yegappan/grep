@@ -4,7 +4,15 @@ Author: Yegappan Lakshmanan  (yegappan AT yahoo DOT com)
 For Vim version 7.0 and above
 Last change: 2018 Jan 21
 
-Overview					*grep-overview*
+1. Overview					|grep-overview|
+2. Installation					|grep-installation|
+3. Usage					|grep-usage|
+4. Configuration				|grep-configuration|
+5. License					|grep-license|
+
+==============================================================================
+						*grep-overview*
+1. Overview~
 
 The grep plugin integrates the grep, fgrep, egrep, and agrep tools with Vim
 and allows you to search for a pattern in one or more files and jump to them.
@@ -20,14 +28,11 @@ utilities from the following sites:
 The github repository for this plugin is at http://github.com/yegappan/grep
 
 ==============================================================================
-Installation					*grep-installation*
+						*grep-installation*
+2. Installation~
 
-1. Expand the grep.zip file in the the $HOME/.vim/plugin or
-   $HOME/vimfiles/plugin or $VIM/vimfiles/plugin directory.  Refer to the
-   following Vim help topics for more information about Vim plugins:
-      :help add-plugin
-      :help add-global-plugin
-      :help runtimepath
+1. Expand the grep.zip file to the the $HOME/.vim/plugin or
+   $HOME/vimfiles/plugin or $VIM/vimfiles/plugin directory.
 2. If the grep executables are not already present in one of the directories
    in the PATH environment variable, then set the Grep_Path and other _Path
    variables to point to the location of the grep utilites in the .vimrc
@@ -37,7 +42,8 @@ Installation					*grep-installation*
    files.
 
 ==============================================================================
-Usage						*grep-usage*
+						*grep-usage*
+3. Usage~
 
 The grep.vim plugin introduces the following Vim commands:
 
@@ -176,7 +182,8 @@ When using GUI Vim, the Tools->Search menu item with a few sub-menu items is
 created for few variations of the search command.
 
 ==============================================================================
-Configuration					*grep-configuration*
+						*grep-configuration*
+4. Configuration~
 
 By changing the following variables you can configure the behavior of this
 plugin. Set the following variables in your .vimrc file using the |:let|
@@ -287,6 +294,16 @@ Unix systems, this is set to '\' and for MS-Window systems, this is set to an
 empty string.  You can change this using the let command:
 
       :let Grep_Shell_Escape_Char = "'"
+
+==============================================================================
+						*grep-license*
+5. License~
+Permission is hereby granted to use and distribute the grep plugin, with or
+without modifications, provided that this copyright notice is copied with it.
+Like anything else that's free, grep.vim is provided *as is* and comes with no
+warranty of any kind, either expressed or implied. In no event will the
+copyright holder be liable for any damamges resulting from the use of this
+software.
 
 ==============================================================================
 

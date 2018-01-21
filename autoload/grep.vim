@@ -77,18 +77,18 @@ endif
 " filename for Vim quickfix processing.
 if !exists("Grep_Null_Device")
     if has('win32')
-        let Grep_Null_Device = 'NUL'
+	let Grep_Null_Device = 'NUL'
     else
-        let Grep_Null_Device = '/dev/null'
+	let Grep_Null_Device = '/dev/null'
     endif
 endif
 
 " Character to use to escape special characters before passing to grep.
 if !exists("Grep_Shell_Escape_Char")
     if has('win32')
-        let Grep_Shell_Escape_Char = ''
+	let Grep_Shell_Escape_Char = ''
     else
-        let Grep_Shell_Escape_Char = '\'
+	let Grep_Shell_Escape_Char = '\'
     endif
 endif
 
@@ -255,12 +255,12 @@ endfunction
 " Run the specified grep command using the supplied pattern
 function! grep#runGrepCmd(cmd, pattern, action)
     if has('win32') && !has('win32unix') && (&shell =~ 'cmd.exe')
-        " Windows does not correctly deal with commands that have more than 1
-        " set of double quotes.  It will strip them all resulting in:
-        " 'C:\Program' is not recognized as an internal or external command
-        " operable program or batch file.  To work around this, place the
-        " command inside a batch file and call the batch file.
-        " Do this only on Win2K, WinXP and above.
+	" Windows does not correctly deal with commands that have more than 1
+	" set of double quotes.  It will strip them all resulting in:
+	" 'C:\Program' is not recognized as an internal or external command
+	" operable program or batch file.  To work around this, place the
+	" command inside a batch file and call the batch file.
+	" Do this only on Win2K, WinXP and above.
 	let s:grep_tempfile = fnamemodify(tempname(), ':h') . '\mygrep.cmd'
 	call writefile(['@echo off', a:cmd], s:grep_tempfile)
 
@@ -278,7 +278,7 @@ function! grep#runGrepCmd(cmd, pattern, action)
 	if s:Use_Async_Grep
 	    return grep#runGrepCmdAsync(a:cmd, a:pattern, a:action)
 	endif
-        let cmd_output = system(a:cmd)
+	let cmd_output = system(a:cmd)
     endif
 
     " Do not check for the shell_error (return code from the command).
@@ -306,7 +306,7 @@ function! grep#runGrepCmd(cmd, pattern, action)
     set efm=%f:%\\s%#%l:%m
 
     if a:action == 'add'
-        execute 'silent! caddfile ' . tmpfile
+	execute 'silent! caddfile ' . tmpfile
     else
 	execute 'silent! cgetfile ' . tmpfile
     endif
@@ -315,8 +315,8 @@ function! grep#runGrepCmd(cmd, pattern, action)
 
     " Open the grep output window
     if g:Grep_OpenQuickfixWindow == 1
-        " Open the quickfix window below the current window
-        botright copen
+	" Open the quickfix window below the current window
+	botright copen
     endif
 
     call delete(tmpfile)
@@ -333,30 +333,30 @@ function! s:GrepParseArgs(args, grep_cmd)
     let filepattern = ''
 
     for one_arg in a:args
-        if one_arg[0] == '-' && pattern == ''
-            " Process grep arguments at the beginning of the argument list
-            let grep_opt = grep_opt . ' ' . one_arg
-        elseif pattern == ''
-            " Only one search pattern can be specified
-            let pattern = shellescape(one_arg)
-        else
-            " More than one file patterns can be specified
-            if filepattern != ''
-                let filepattern = filepattern . ' ' . one_arg
-            else
-                let filepattern = one_arg
-            endif
-        endif
+	if one_arg[0] == '-' && pattern == ''
+	    " Process grep arguments at the beginning of the argument list
+	    let grep_opt = grep_opt . ' ' . one_arg
+	elseif pattern == ''
+	    " Only one search pattern can be specified
+	    let pattern = shellescape(one_arg)
+	else
+	    " More than one file patterns can be specified
+	    if filepattern != ''
+		let filepattern = filepattern . ' ' . one_arg
+	    else
+		let filepattern = one_arg
+	    endif
+	endif
     endfor
 
     if grep_opt == ''
-        let grep_opt = g:Grep_Default_Options
+	let grep_opt = g:Grep_Default_Options
     endif
 
     if a:grep_cmd != 'agrep'
-        " Don't display messages about non-existent files
-        " Agrep doesn't support the -s option
-        let grep_opt = grep_opt . ' -s'
+	" Don't display messages about non-existent files
+	" Agrep doesn't support the -s option
+	let grep_opt = grep_opt . ' -s'
     endif
 
     return [grep_opt, pattern, filepattern]
@@ -419,9 +419,9 @@ endfunction
 " Run specified grep command recursively
 function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
     if a:0 > 0 && (a:1 == '-?' || a:1 == '-h')
-        echo 'Usage: ' . a:cmd_name . ' [<grep_options>] [<search_pattern> ' .
-                        \ '[<file_name(s)>]]'
-        return
+	echo 'Usage: ' . a:cmd_name . ' [<grep_options>] [<search_pattern> ' .
+		    \ '[<file_name(s)>]]'
+	return
     endif
 
     " Parse the arguments and get the grep options, search pattern
@@ -433,21 +433,21 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
 
     " No argument supplied. Get the identifier and file list from user
     if pattern == '' 
-        let pattern = input('Search for pattern: ', expand('<cword>'))
-        if pattern == ''
-            return
-        endif
-        let pattern = shellescape(pattern)
-        echo "\r"
+	let pattern = input('Search for pattern: ', expand('<cword>'))
+	if pattern == ''
+	    return
+	endif
+	let pattern = shellescape(pattern)
+	echo "\r"
     endif
 
     let cwd = getcwd()
     if g:Grep_Cygwin_Find == 1
-        let cwd = substitute(cwd, "\\", "/", 'g')
+	let cwd = substitute(cwd, "\\", "/", 'g')
     endif
     let startdir = input('Start searching from directory: ', cwd, 'dir')
     if startdir == ''
-        return
+	return
     endif
     echo "\r"
 
@@ -456,69 +456,69 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
     endif
 
     if filenames == ''
-        let filenames = input('Search in files matching pattern: ', 
-                                          \ g:Grep_Default_Filelist)
-        if filenames == ''
-            return
-        endif
-        echo "\r"
+	let filenames = input('Search in files matching pattern: ', 
+		    \ g:Grep_Default_Filelist)
+	if filenames == ''
+	    return
+	endif
+	echo "\r"
     endif
 
     let find_file_pattern = ''
     for one_pattern in split(filenames, ' ')
-        if find_file_pattern != ''
-            let find_file_pattern = find_file_pattern . ' -o'
-        endif
-        let find_file_pattern = find_file_pattern . ' -name ' .
-              \ shellescape(one_pattern)
+	if find_file_pattern != ''
+	    let find_file_pattern = find_file_pattern . ' -o'
+	endif
+	let find_file_pattern = find_file_pattern . ' -name ' .
+		    \ shellescape(one_pattern)
     endfor
     let find_file_pattern = g:Grep_Shell_Escape_Char . '(' .
-                    \ find_file_pattern . ' ' . g:Grep_Shell_Escape_Char . ')'
+		\ find_file_pattern . ' ' . g:Grep_Shell_Escape_Char . ')'
 
     let find_prune = ''
     if g:Grep_Skip_Dirs != ''
-        for one_dir in split(g:Grep_Skip_Dirs, ' ')
-            if find_prune != ''
-                let find_prune = find_prune . ' -o'
-            endif
-            let find_prune = find_prune . ' -name ' .
-                        \ shellescape(one_dir)
-        endfor
+	for one_dir in split(g:Grep_Skip_Dirs, ' ')
+	    if find_prune != ''
+		let find_prune = find_prune . ' -o'
+	    endif
+	    let find_prune = find_prune . ' -name ' .
+			\ shellescape(one_dir)
+	endfor
 
-        let find_prune = '-type d ' . g:Grep_Shell_Escape_Char . '(' .
-                    \ find_prune . ' ' . g:Grep_Shell_Escape_Char . ')'
+	let find_prune = '-type d ' . g:Grep_Shell_Escape_Char . '(' .
+		    \ find_prune . ' ' . g:Grep_Shell_Escape_Char . ')'
     endif
 
     let find_skip_files = '-type f'
     for one_file in split(g:Grep_Skip_Files, ' ')
-        let find_skip_files = find_skip_files . ' ! -name ' .
-                    \ shellescape(one_file)
+	let find_skip_files = find_skip_files . ' ! -name ' .
+		    \ shellescape(one_file)
     endfor
 
     if has('win32')
-	let g:Grep_Find_Path = fnameescape(g:Grep_Find_Path, ':8')
-	let g:Grep_Xargs_Path = fnameescape(g:Grep_Xargs_Path, ':8')
+	let g:Grep_Find_Path = fnamemodify(g:Grep_Find_Path, ':8')
+	let g:Grep_Xargs_Path = fnamemodify(g:Grep_Xargs_Path, ':8')
     endif
 
     if g:Grep_Find_Use_Xargs == 1
-        let cmd = g:Grep_Find_Path . ' "' . startdir . '"'
-                    \ . ' ' . find_prune . " -prune -o"
-                    \ . ' ' . find_skip_files
-                    \ . ' ' . find_file_pattern
-                    \ . " -print0 | "
-                    \ . g:Grep_Xargs_Path . ' ' . g:Grep_Xargs_Options
-                    \ . ' ' . grep_path . ' ' . grep_opt . " -n "
-                    \ . grep_expr_option . ' ' . pattern
-                    \ . ' ' . g:Grep_Null_Device 
+	let cmd = g:Grep_Find_Path . ' "' . startdir . '"'
+		    \ . ' ' . find_prune . " -prune -o"
+		    \ . ' ' . find_skip_files
+		    \ . ' ' . find_file_pattern
+		    \ . " -print0 | "
+		    \ . g:Grep_Xargs_Path . ' ' . g:Grep_Xargs_Options
+		    \ . ' ' . grep_path . ' ' . grep_opt . " -n "
+		    \ . grep_expr_option . ' ' . pattern
+		    \ . ' ' . g:Grep_Null_Device 
     else
-        let cmd = g:Grep_Find_Path . ' ' . startdir
-                    \ . ' ' . find_prune . " -prune -o"
-                    \ . ' ' . find_skip_files
-                    \ . ' ' . find_file_pattern
-                    \ . " -exec " . grep_path . ' ' . grep_opt . " -n "
-                    \ . grep_expr_option . ' ' . pattern
-                    \ . " {} " . g:Grep_Null_Device . ' ' .
-                         \ g:Grep_Shell_Escape_Char . ';'
+	let cmd = g:Grep_Find_Path . ' ' . startdir
+		    \ . ' ' . find_prune . " -prune -o"
+		    \ . ' ' . find_skip_files
+		    \ . ' ' . find_file_pattern
+		    \ . " -exec " . grep_path . ' ' . grep_opt . " -n "
+		    \ . grep_expr_option . ' ' . pattern
+		    \ . " {} " . g:Grep_Null_Device . ' ' .
+		    \ g:Grep_Shell_Escape_Char . ';'
     endif
 
     call grep#runGrepCmd(cmd, pattern, a:action)
@@ -529,26 +529,26 @@ endfunction
 " argument list
 function! grep#runGrepSpecial(cmd_name, which, action, ...)
     if a:0 > 0 && (a:1 == '-?' || a:1 == '-h')
-        echo 'Usage: ' . a:cmd_name . ' [<grep_options>] [<search_pattern>]'
-        return
+	echo 'Usage: ' . a:cmd_name . ' [<grep_options>] [<search_pattern>]'
+	return
     endif
 
     " Search in all the Vim buffers
     if a:which == 'buffer'
-        let filenames = s:GetListOfBufferNames()
-        " No buffers
-        if filenames == ''
+	let filenames = s:GetListOfBufferNames()
+	" No buffers
+	if filenames == ''
 	    call s:WarnMsg('Error: Buffer list is empty')
-            return
-        endif
+	    return
+	endif
     elseif a:which == 'args'
-        " Search in all the filenames in the argument list
+	" Search in all the filenames in the argument list
 	let filenames = s:GetListOfArgFiles()
-        " No arguments
-        if filenames == ''
+	" No arguments
+	if filenames == ''
 	    call s:WarnMsg('Error: Argument list is empty')
-            return
-        endif
+	    return
+	endif
     endif
 
     let grep_opt = ''
@@ -558,16 +558,16 @@ function! grep#runGrepSpecial(cmd_name, which, action, ...)
     " supplied by the user. All the grep options will be preceded
     " by a '-'
     for one_arg in a:000
-        if one_arg !~ '^-'
-            break
-        endif
+	if one_arg !~ '^-'
+	    break
+	endif
 
-        let grep_opt = grep_opt . ' ' . one_arg
+	let grep_opt = grep_opt . ' ' . one_arg
     endfor
 
     " If the user didn't specify the option, then use the defaults
     if grep_opt == ''
-        let grep_opt = g:Grep_Default_Options
+	let grep_opt = g:Grep_Default_Options
     endif
 
     " Don't display messages about non-existent files
@@ -576,16 +576,16 @@ function! grep#runGrepSpecial(cmd_name, which, action, ...)
     " The last argument specified by the user is the pattern
     let pattern = get(a:000, -1, '')
     if pattern =~ '^-'
-        let pattern = ''
+	let pattern = ''
     endif
 
     if pattern == ''
-        " No argument supplied. Get the identifier and file list from user
-        let pattern = input('Search for pattern: ', expand('<cword>'))
-        if pattern == ''
-            return
-        endif
-        echo "\r"
+	" No argument supplied. Get the identifier and file list from user
+	let pattern = input('Search for pattern: ', expand('<cword>'))
+	if pattern == ''
+	    return
+	endif
+	echo "\r"
     endif
 
     let pattern = shellescape(pattern)
@@ -603,9 +603,9 @@ endfunction
 " Run the specified grep command
 function! grep#runGrep(cmd_name, grep_cmd, action, ...)
     if a:0 > 0 && (a:1 == '-?' || a:1 == '-h')
-        echo 'Usage: ' . a:cmd_name . ' [<grep_options>] [<search_pattern> ' .
-                        \ '[<file_name(s)>]]'
-        return
+	echo 'Usage: ' . a:cmd_name . ' [<grep_options>] [<search_pattern> ' .
+		    \ '[<file_name(s)>]]'
+	return
     endif
 
     " Parse the arguments and get the grep options, search pattern
@@ -617,21 +617,21 @@ function! grep#runGrep(cmd_name, grep_cmd, action, ...)
 
     " Get the identifier and file list from user
     if pattern == '' 
-        let pattern = input('Search for pattern: ', expand('<cword>'))
-        if pattern == ''
-            return
-        endif
-        let pattern = shellescape(pattern)
-        echo "\r"
+	let pattern = input('Search for pattern: ', expand('<cword>'))
+	if pattern == ''
+	    return
+	endif
+	let pattern = shellescape(pattern)
+	echo "\r"
     endif
 
     if filenames == ''
 	let filenames = input('Search in files: ', g:Grep_Default_Filelist,
 		    \ 'file')
-        if filenames == ''
-            return
-        endif
-        echo "\r"
+	if filenames == ''
+	    return
+	endif
+	echo "\r"
     endif
 
     " Add /dev/null to the list of filenames, so that grep prints the
