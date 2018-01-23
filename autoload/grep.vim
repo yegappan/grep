@@ -1,7 +1,7 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.0
-" Last Modified: Jan 21, 2018
+" Last Modified: Jan 23, 2018
 " 
 " Plugin to integrate grep utilities with Vim
 
@@ -360,10 +360,15 @@ function! s:GrepParseArgs(args, grep_cmd)
 
     if a:grep_cmd == 'ag'
 	let grep_opt = grep_opt . ' --vimgrep'
-    elseif a:grep_cmd != 'agrep'
-	" Don't display messages about non-existent files
-	" Agrep doesn't support the -s option
-	let grep_opt = grep_opt . ' -s'
+    else
+	if a:grep_cmd != 'agrep'
+	    " Don't display messages about non-existent files
+	    " Agrep doesn't support the -s option
+	    let grep_opt = grep_opt . ' -s'
+	endif
+	" In Silver searcher (ag) the -n option disables recursive search.
+	" In other grep commands, it displays the line number of the match.
+	let grep_opt = grep_opt . ' -n'
     endif
 
     return [grep_opt, pattern, filepattern]
@@ -516,7 +521,7 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
 		    \ . ' ' . find_file_pattern
 		    \ . " -print0 | "
 		    \ . g:Grep_Xargs_Path . ' ' . g:Grep_Xargs_Options
-		    \ . ' ' . grep_path . ' ' . grep_opt . " -n "
+		    \ . ' ' . grep_path . ' ' . grep_opt . ' '
 		    \ . grep_expr_option . ' ' . pattern
 		    \ . ' ' . g:Grep_Null_Device 
     else
@@ -524,7 +529,7 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
 		    \ . ' ' . find_prune . " -prune -o"
 		    \ . ' ' . find_skip_files
 		    \ . ' ' . find_file_pattern
-		    \ . " -exec " . grep_path . ' ' . grep_opt . " -n "
+		    \ . " -exec " . grep_path . ' ' . grep_opt . ' '
 		    \ . grep_expr_option . ' ' . pattern
 		    \ . " {} " . g:Grep_Null_Device . ' ' .
 		    \ g:Grep_Shell_Escape_Char . ';'
@@ -649,7 +654,7 @@ function! grep#runGrep(cmd_name, grep_cmd, action, ...)
 	let filenames = filenames . ' ' . g:Grep_Null_Device
     endif
 
-    let cmd = grep_path . ' ' . grep_opt . ' -n ' .
+    let cmd = grep_path . ' ' . grep_opt . ' ' .
 		\ grep_expr_option . ' ' . pattern . ' ' . filenames
 
     call grep#runGrepCmd(cmd, pattern, a:action)
