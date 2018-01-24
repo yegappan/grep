@@ -29,9 +29,14 @@ if !exists("Agrep_Path")
     let Agrep_Path = 'agrep'
 endif
 
-" Location of the Ag utility
+" Location of the Silver Searcher (ag) utility
 if !exists("Ag_Path")
     let Ag_Path = 'ag'
+endif
+
+" Location of the Ripgrep (rg) utility
+if !exists("Rg_Path")
+    let Rg_Path = 'rg'
 endif
 
 " Location of the find utility
@@ -358,7 +363,7 @@ function! s:GrepParseArgs(args, grep_cmd)
 	let grep_opt = g:Grep_Default_Options
     endif
 
-    if a:grep_cmd == 'ag'
+    if a:grep_cmd == 'ag' || a:grep_cmd == 'rg'
 	let grep_opt = grep_opt . ' --vimgrep'
     else
 	if a:grep_cmd != 'agrep'
@@ -388,7 +393,8 @@ function! s:GrepCmdToOption(grep_cmd)
                            \ 'fgrep': [g:Fgrep_Path, '-e'],
                            \ 'egrep': [g:Egrep_Path, '-e'],
                            \ 'agrep': [g:Agrep_Path, ''],
-			   \ 'ag' : [g:Ag_Path, '']}
+			   \ 'ag' : [g:Ag_Path, ''],
+			   \ 'rg' : [g:Rg_Path, '-e']}
 
     return cmd_to_option_map[a:grep_cmd]
 endfunction
@@ -650,7 +656,7 @@ function! grep#runGrep(cmd_name, grep_cmd, action, ...)
 
     " Add /dev/null to the list of filenames, so that grep prints the
     " filename and line number when grepping in a single file
-    if a:grep_cmd != 'ag'
+    if a:grep_cmd != 'ag' && a:grep_cmd != 'rg'
 	let filenames = filenames . ' ' . g:Grep_Null_Device
     endif
 

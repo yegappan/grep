@@ -68,6 +68,12 @@ command! -nargs=* -complete=file Ag
 command! -nargs=* -complete=file AgAdd
 	\ call grep#runGrep('AgAdd', 'ag', 'add', <f-args>)
 
+" Ripgrep (rg) commands
+command! -nargs=* -complete=file Rg
+	    \ call grep#runGrep('Rg', 'rg', 'set', <f-args>)
+command! -nargs=* -complete=file RgAdd
+	\ call grep#runGrep('RgAdd', 'rg', 'add', <f-args>)
+
 " Buffer list grep commands
 command! -nargs=* GrepBuffer
 	\ call grep#runGrepSpecial('GrepBuffer', 'buffer', 'set', <f-args>)

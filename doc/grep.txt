@@ -14,21 +14,28 @@ Last change: 2018 Jan 23
 						*grep-overview*
 1. Overview~
 
-The grep plugin integrates the grep, fgrep, egrep, agrep and ag tools with Vim
-and allows you to search for a pattern in one or more files and jump to them.
+The grep plugin integrates the grep, fgrep, egrep, agrep, ag and ripgrep tools
+with Vim and allows you to search for a pattern in one or more files and jump
+to them.
 
-To use this plugin, you need the grep, fgrep, egrep, agrep, find and xargs
-utilities. These tools are present in most of the Unix and MacOS
+To use the this plugin with grep, you will need the grep, fgrep, egrep, agrep
+utilities. To recursive search for files using grep, you will need the find
+and xargs utilities. These tools are present in most of the Unix and MacOS
 installations.  For MS-Windows systems, you can download the GNU grep and find
 utilities from the following sites:
 
-  http://gnuwin32.sourceforge.net/packages/grep.htm
-  http://gnuwin32.sourceforge.net/packages/findutils.htm
+    http://gnuwin32.sourceforge.net/packages/grep.htm
+    http://gnuwin32.sourceforge.net/packages/findutils.htm
 
 If you want to use the Silver Searcher (ag) with this plugin, then you can
 download it from:
 
-  https://github.com/ggreer/the_silver_searcher
+    https://github.com/ggreer/the_silver_searcher
+
+If you want to use ripgrep (rg) with this plugin, then you can download the
+ripgrep utility from:
+
+    https://github.com/BurntSushi/ripgrep
 
 The github repository for this plugin is at http://github.com/yegappan/grep
 
@@ -86,6 +93,9 @@ The grep.vim plugin introduces the following Vim commands:
 :Ag            - Run the silver searcher (ag)
 :AgAdd         - Same as ":Ag" but adds the results to the current
                  results
+:Rg            - Run ripgrep (rg)
+:RgAdd         - Same as ":Rg" but adds the results to the current
+                 results
 
 The above commands can be invoked like this:
 
@@ -98,6 +108,7 @@ The above commands can be invoked like this:
    :Agrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
    :Ragrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
    :Ag [<grep_options>] [<search_pattern> [<file_name(s)>]]
+   :Rg [<grep_options>] [<search_pattern> [<file_name(s)>]]
 
    :GrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
    :RgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
@@ -108,6 +119,7 @@ The above commands can be invoked like this:
    :AgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
    :RagrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
    :AgAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+   :RgAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
 
    :GrepBuffer [<grep_options>] [<search_pattern>]
    :Bgrep [<grep_options>] [<search_pattern>]
@@ -156,12 +168,14 @@ prompt, read |:cmdline-editing| Vim help topic.
 
 After invoking any of the grep commands, you can cancel the command, when you
 are prompted for a search pattern or file names or a directory by pressing the
-<Esc> key. You cannot cancel (or kill) the grep/fgrep/egrep/agrep commands
-after the external command is invoked.
+<Esc> key. If you are using a Vim version before 8.0, then you cannot cancel
+(or kill) the grep/fgrep/egrep/agrep commands after the external command is
+invoked.
 
 If you are using Vim version 8.0 and above, then the grep commands are run
 asynchronously in the background. The search output is parsed and the results
-are added to the quickfix list in the background.
+are added to the quickfix list in the background. Invoking a grep command will
+cancel the current grep command which is running in the background (if any).
 
 The GrepAdd, RgrepAdd and other *Add commands append the search output to the
 current search output. This is useful if you want to see the search results
@@ -233,6 +247,11 @@ default, this is set to ag. You can change this using the let command:
 
       :let Ag_Path = 'C:\Progra~1\Silver_Searcher\ag.exe'
 
+The 'Rg_Path' variable is used to locate the rg (ripgrep) utility. By default,
+this is set to rg. You can change this using the let command:
+
+      :let Rg_Path = 'C:\Progra~1\ripgrep\rg.exe'
+
 The 'Grep_Find_Path' variable is used to locate the find utility. By default,
 this is set to 'find'. Note that on MS-Windows, there is a find.exe that is
 part of the base OS. This find utility is different from the the Unix find
@@ -257,7 +276,7 @@ can change this settings using the let command:
       :let Grep_Default_Filelist = '*.c *.cpp *.asm'
 
 The 'Grep_Default_Options' is used to pass default command line options to the
-grep/fgrep/egrep/agrep/ag utilities. By default, this is set to an empty
+grep/fgrep/egrep/agrep/ag/rg utilities. By default, this is set to an empty
 string.  You can change this using the let command:
 
       :let Grep_Default_Options = '-i'
