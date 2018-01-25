@@ -39,6 +39,11 @@ if !exists("Rg_Path")
     let Rg_Path = 'rg'
 endif
 
+" Location of the ack utility
+if !exists("Ack_Path")
+    let Ack_Path = 'ack'
+endif
+
 " Location of the find utility
 if !exists("Grep_Find_Path")
     let Grep_Find_Path = 'find'
@@ -365,6 +370,8 @@ function! s:GrepParseArgs(args, grep_cmd)
 
     if a:grep_cmd == 'ag' || a:grep_cmd == 'rg'
 	let grep_opt = grep_opt . ' --vimgrep'
+    elseif a:grep_cmd == 'ack'
+	let grep_opt = grep_opt . ' -H --column --nofilter --nocolor --nogroup'
     else
 	if a:grep_cmd != 'agrep'
 	    " Don't display messages about non-existent files
@@ -394,7 +401,8 @@ function! s:GrepCmdToOption(grep_cmd)
                            \ 'egrep': [g:Egrep_Path, '-e'],
                            \ 'agrep': [g:Agrep_Path, ''],
 			   \ 'ag' : [g:Ag_Path, ''],
-			   \ 'rg' : [g:Rg_Path, '-e']}
+			   \ 'rg' : [g:Rg_Path, '-e'],
+			   \ 'ack' : [g:Ack_Path, '--match']}
 
     return cmd_to_option_map[a:grep_cmd]
 endfunction
@@ -656,7 +664,7 @@ function! grep#runGrep(cmd_name, grep_cmd, action, ...)
 
     " Add /dev/null to the list of filenames, so that grep prints the
     " filename and line number when grepping in a single file
-    if a:grep_cmd != 'ag' && a:grep_cmd != 'rg'
+    if a:grep_cmd != 'ag' && a:grep_cmd != 'rg' && a:grep_cmd != 'ack'
 	let filenames = filenames . ' ' . g:Grep_Null_Device
     endif
 

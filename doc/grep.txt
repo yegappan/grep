@@ -14,9 +14,9 @@ Last change: 2018 Jan 23
 						*grep-overview*
 1. Overview~
 
-The grep plugin integrates the grep, fgrep, egrep, agrep, ag and ripgrep tools
-with Vim and allows you to search for a pattern in one or more files and jump
-to them.
+The grep plugin integrates the grep, fgrep, egrep, agrep, ag, ack and ripgrep
+tools with Vim and allows you to search for a pattern in one or more files and
+jump to them.
 
 To use the this plugin with grep, you will need the grep, fgrep, egrep, agrep
 utilities. To recursive search for files using grep, you will need the find
@@ -28,9 +28,14 @@ utilities from the following sites:
     http://gnuwin32.sourceforge.net/packages/findutils.htm
 
 If you want to use the Silver Searcher (ag) with this plugin, then you can
-download it from:
+download the Silver Searcher from:
 
     https://github.com/ggreer/the_silver_searcher
+
+If you want to use the ack utility with this plugin, then you can
+download the ack utility from:
+
+    https://beyondgrep.com/
 
 If you want to use ripgrep (rg) with this plugin, then you can download the
 ripgrep utility from:
@@ -93,6 +98,9 @@ The grep.vim plugin introduces the following Vim commands:
 :Ag            - Run the silver searcher (ag)
 :AgAdd         - Same as ":Ag" but adds the results to the current
                  results
+:Ack           - Run ack
+:AckAdd        - Same as ":Ack" but adds the results to the current
+                 results
 :Rg            - Run ripgrep (rg)
 :RgAdd         - Same as ":Rg" but adds the results to the current
                  results
@@ -108,6 +116,7 @@ The above commands can be invoked like this:
    :Agrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
    :Ragrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
    :Ag [<grep_options>] [<search_pattern> [<file_name(s)>]]
+   :Ack [<grep_options>] [<search_pattern> [<file_name(s)>]]
    :Rg [<grep_options>] [<search_pattern> [<file_name(s)>]]
 
    :GrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
@@ -119,6 +128,7 @@ The above commands can be invoked like this:
    :AgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
    :RagrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
    :AgAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+   :AckAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
    :RgAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
 
    :GrepBuffer [<grep_options>] [<search_pattern>]
@@ -246,6 +256,11 @@ The 'Ag_Path' variable is used to locate the ag (silver searcher) utility. By
 default, this is set to ag. You can change this using the let command:
 
       :let Ag_Path = 'C:\Progra~1\Silver_Searcher\ag.exe'
+
+The 'Ack_Path' variable is used to locate the ack utility. By default, this is
+set to ack. You can change this using the let command:
+
+      :let Ack_Path = 'C:\Progra~1\ack\ack.pl'
 
 The 'Rg_Path' variable is used to locate the rg (ripgrep) utility. By default,
 this is set to rg. You can change this using the let command:

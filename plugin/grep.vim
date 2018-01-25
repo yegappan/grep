@@ -74,6 +74,12 @@ command! -nargs=* -complete=file Rg
 command! -nargs=* -complete=file RgAdd
 	\ call grep#runGrep('RgAdd', 'rg', 'add', <f-args>)
 
+" ack commands
+command! -nargs=* -complete=file Ack
+	    \ call grep#runGrep('Ack', 'ack', 'set', <f-args>)
+command! -nargs=* -complete=file AckAdd
+	\ call grep#runGrep('AckAdd', 'ack', 'add', <f-args>)
+
 " Buffer list grep commands
 command! -nargs=* GrepBuffer
 	\ call grep#runGrepSpecial('GrepBuffer', 'buffer', 'set', <f-args>)
