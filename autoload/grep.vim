@@ -119,25 +119,29 @@ if !exists("Grep_Skip_Files")
     let Grep_Skip_Files = '*~ *,v s.*'
 endif
 
+" Run the grep commands asynchronously and update the quickfix list with the
+" results in the background
+if !exists('Grep_Use_Async')
+    " Check whether we can run the grep command asynchronously.
+    if v:version >= 800
+	let Grep_Use_Async = 1
+	" Check whether we can use the quickfix identifier to add the grep
+	" output to a specific quickfix list
+	if has('patch-8.0.1023')
+	    let s:Grep_Use_QfID = 1
+	else
+	    let s:Grep_Use_QfID = 0
+	endif
+    else
+	let Grep_Use_Async = 0
+    endif
+endif
+
 " WarnMsg
 " Display a warning message
 function! s:WarnMsg(msg)
     echohl WarningMsg | echomsg a:msg | echohl None
 endfunction
-
-" Check whether we can run the grep command asynchronously.
-if v:version >= 800
-    let s:Use_Async_Grep = 1
-    " Check whether we can use the quickfix identifier to add the grep output
-    " to a specific quickfix list
-    if has('patch-8.0.1023')
-	let s:Grep_Use_QfID = 1
-    else
-	let s:Grep_Use_QfID = 0
-    endif
-else
-    let s:Use_Async_Grep = 0
-endif
 
 let s:grep_cmd_job = 0
 let s:grep_tempfile = ''
@@ -279,7 +283,7 @@ function! grep#runGrepCmd(cmd, pattern, action)
 	let s:grep_tempfile = fnamemodify(tempname(), ':h') . '\mygrep.cmd'
 	call writefile(['@echo off', a:cmd], s:grep_tempfile)
 
-	if s:Use_Async_Grep
+	if g:Grep_Use_Async
 	    call grep#runGrepCmdAsync(s:grep_tempfile, a:pattern, a:action)
 	    return
 	endif
@@ -290,7 +294,7 @@ function! grep#runGrepCmd(cmd, pattern, action)
 	    call delete(s:grep_tempfile)
 	endif
     else
-	if s:Use_Async_Grep
+	if g:Grep_Use_Async
 	    return grep#runGrepCmdAsync(a:cmd, a:pattern, a:action)
 	endif
 	let cmd_output = system(a:cmd)
