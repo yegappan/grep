@@ -121,10 +121,10 @@ endif
 
 " Run the grep commands asynchronously and update the quickfix list with the
 " results in the background
-if !exists('Grep_Use_Async')
+if !exists('Grep_Run_Async')
     " Check whether we can run the grep command asynchronously.
     if v:version >= 800
-	let Grep_Use_Async = 1
+	let Grep_Run_Async = 1
 	" Check whether we can use the quickfix identifier to add the grep
 	" output to a specific quickfix list
 	if has('patch-8.0.1023')
@@ -133,7 +133,7 @@ if !exists('Grep_Use_Async')
 	    let s:Grep_Use_QfID = 0
 	endif
     else
-	let Grep_Use_Async = 0
+	let Grep_Run_Async = 0
     endif
 endif
 
@@ -166,8 +166,9 @@ function! grep#cmd_output_cb(qf_id, channel, msg)
 	call WarnMsg('Error: Job not found in grep command output callback')
 	return
     endif
+
+    " Check whether the quickfix list is still present
     if s:Grep_Use_QfID
-	" Check whether the quickfix list is still present
 	let l = getqflist({'id' : a:qf_id})
 	if !has_key(l, 'id') || l.id == 0
 	    " Quickfix list is not present. Stop the search.
@@ -196,8 +197,9 @@ function! grep#chan_close_cb(qf_id, channel)
 	return
     endif
     let emsg = '[Search command exited with status ' . job_info(job).exitval . ']'
+
+    " Check whether the quickfix list is still present
     if s:Grep_Use_QfID
-	" Check whether the quickfix list is still present
 	let l = getqflist({'id' : a:qf_id})
 	if has_key(l, 'id') && l.id == a:qf_id
 	    call setqflist([], 'a', {'id' : a:qf_id,
@@ -283,7 +285,7 @@ function! grep#runGrepCmd(cmd, pattern, action)
 	let s:grep_tempfile = fnamemodify(tempname(), ':h') . '\mygrep.cmd'
 	call writefile(['@echo off', a:cmd], s:grep_tempfile)
 
-	if g:Grep_Use_Async
+	if g:Grep_Run_Async
 	    call grep#runGrepCmdAsync(s:grep_tempfile, a:pattern, a:action)
 	    return
 	endif
@@ -294,7 +296,7 @@ function! grep#runGrepCmd(cmd, pattern, action)
 	    call delete(s:grep_tempfile)
 	endif
     else
-	if g:Grep_Use_Async
+	if g:Grep_Run_Async
 	    return grep#runGrepCmdAsync(a:cmd, a:pattern, a:action)
 	endif
 	let cmd_output = system(a:cmd)

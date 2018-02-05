@@ -363,6 +363,11 @@ empty string.  You can change this using the let command:
 
       :let Grep_Shell_Escape_Char = "'"
 
+The 'Grep_Run_Async' variable specifies whether the grep commands are run
+synchronously or asynchronously. Depending on the Vim version, this variable
+is set automatically.  If you want to force Vim to run the grep commands
+synchronously, then you can set the 'Grep_Run_Async' variable to 1.
+
 ==============================================================================
 						*grep-license*
 5. License~
