@@ -19,7 +19,7 @@ tools with Vim and allows you to search for a pattern in one or more files and
 jump to them.
 
 To use the this plugin with grep, you will need the grep, fgrep, egrep, agrep
-utilities. To recursive search for files using grep, you will need the find
+utilities. To recursively search for files using grep, you will need the find
 and xargs utilities. These tools are present in most of the Unix and MacOS
 installations.  For MS-Windows systems, you can download the GNU grep and find
 utilities from the following sites:
@@ -46,7 +46,7 @@ The silver searcher, ripgrep and ack utilities can search for a pattern
 recursively across directories without using any other additional utilities
 like find and xargs.
 
-The github repository for this plugin is at http://github.com/yegappan/grep
+The github repository for this plugin is at https://github.com/yegappan/grep
 
 ==============================================================================
 						*grep-installation*
@@ -111,37 +111,37 @@ The grep.vim plugin introduces the following Vim commands:
 
 The above commands can be invoked like this:
 
-   :Grep   [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :Rgrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :Fgrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :Rfgrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :Egrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :Regrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :Agrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :Ragrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :Ag [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :Ack [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :Rg [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :Grep   [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :Rgrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :Fgrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :Rfgrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :Egrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :Regrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :Agrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :Ragrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :Ag [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :Ack [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :Rg [<grep_options>] [<search_pattern> [<file_name(s)>]]
 
-   :GrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :RgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :FgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :RfgrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :EgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :RegrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :AgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :RagrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :AgAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :AckAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
-   :RgAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :GrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :RgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :FgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :RfgrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :EgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :RegrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :AgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :RagrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :AgAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :AckAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :RgAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
 
-   :GrepBuffer [<grep_options>] [<search_pattern>]
-   :Bgrep [<grep_options>] [<search_pattern>]
-   :GrepArgs [<grep_options>] [<search_pattern>]
+    :GrepBuffer [<grep_options>] [<search_pattern>]
+    :Bgrep [<grep_options>] [<search_pattern>]
+    :GrepArgs [<grep_options>] [<search_pattern>]
 
-   :GrepBufferAdd [<grep_options>] [<search_pattern>]
-   :BgrepAdd [<grep_options>] [<search_pattern>]
-   :GrepArgsAdd [<grep_options>] [<search_pattern>]
+    :GrepBufferAdd [<grep_options>] [<search_pattern>]
+    :BgrepAdd [<grep_options>] [<search_pattern>]
+    :GrepArgsAdd [<grep_options>] [<search_pattern>]
 
 In the above commands, all the arguments are optional.
 
@@ -245,37 +245,37 @@ command.
 The 'Grep_Path' variable is used to locate the grep utility. By default, this
 is set to grep. You can change this using the let command:
 
-      :let Grep_Path = 'C:\Progra~1\Grep\grep.exe'
+    :let Grep_Path = 'C:\Progra~1\Grep\grep.exe'
 
 The 'Fgrep_Path' variable is used to locate the fgrep utility. By default,
 this is set to fgrep. You can change this using the let command:
 
-      :let Fgrep_Path = 'C:\Progra~1\Grep\fgrep.exe'
+    :let Fgrep_Path = 'C:\Progra~1\Grep\fgrep.exe'
 
 The 'Egrep_Path' variable is used to locate the egrep utility. By default,
 this is set to egrep. You can change this using the let command:
 
-      :let Egrep_Path = 'C:\Progra~1\Grep\egrep.exe'
+    :let Egrep_Path = 'C:\Progra~1\Grep\egrep.exe'
 
 The 'Agrep_Path' variable is used to locate the agrep utility. By default,
 this is set to agrep. You can change this using the let command:
 
-      :let Agrep_Path = 'C:\Progra~1\Grep\agrep.exe'
+    :let Agrep_Path = 'C:\Progra~1\Grep\agrep.exe'
 
 The 'Ag_Path' variable is used to locate the ag (silver searcher) utility. By
 default, this is set to ag. You can change this using the let command:
 
-      :let Ag_Path = 'C:\Progra~1\Silver_Searcher\ag.exe'
+    :let Ag_Path = 'C:\Progra~1\Silver_Searcher\ag.exe'
 
 The 'Ack_Path' variable is used to locate the ack utility. By default, this is
 set to ack. You can change this using the let command:
 
-      :let Ack_Path = 'C:\Progra~1\ack\ack.pl'
+    :let Ack_Path = 'C:\Progra~1\ack\ack.pl'
 
 The 'Rg_Path' variable is used to locate the rg (ripgrep) utility. By default,
 this is set to rg. You can change this using the let command:
 
-      :let Rg_Path = 'C:\Progra~1\ripgrep\rg.exe'
+    :let Rg_Path = 'C:\Progra~1\ripgrep\rg.exe'
 
 The 'Grep_Find_Path' variable is used to locate the find utility. By default,
 this is set to 'find'. Note that on MS-Windows, there is a find.exe that is
@@ -284,12 +284,12 @@ utility. You cannot use this utility with this plugin. You must install the
 Unix compatible find utility and set the Grep_Find_Path variable to point to
 the location of the utility. You can change this using the let command:
 
-      :let Grep_Find_Path = 'C:\Progra~1\Grep\find.exe'
+    :let Grep_Find_Path = 'C:\Progra~1\Grep\find.exe'
 
 The 'Grep_Xargs_Path' variable is used to locate the xargs utility. By
 default, this is set to xargs. You can change this using the let command:
 
-      :let Grep_Xargs_Path = 'C:\Progra~1\Grep\xargs.exe'
+    :let Grep_Xargs_Path = 'C:\Progra~1\Grep\xargs.exe'
 
 When running any one of the Grep commands, you will be prompted for the files
 in which to search for the pattern. The 'Grep_Default_Filelist' variable is
@@ -297,32 +297,32 @@ used to specify to default for this prompt. By default, this variable is set
 to '*'. You can specify multiple matching patterns separated by spaces. You
 can change this settings using the let command:
 
-      :let Grep_Default_Filelist = '*.[chS]'
-      :let Grep_Default_Filelist = '*.c *.cpp *.asm'
+    :let Grep_Default_Filelist = '*.[chS]'
+    :let Grep_Default_Filelist = '*.c *.cpp *.asm'
 
 The 'Grep_Default_Options' is used to pass default command line options to the
 grep/fgrep/egrep/agrep/ag/rg utilities. By default, this is set to an empty
 string.  You can change this using the let command:
 
-      :let Grep_Default_Options = '-i'
+    :let Grep_Default_Options = '-i'
 
 The 'Grep_Skip_Dirs' variable specifies the list of directories to skip while
 doing recursive searches. By default, this is set to 'RCS CVS SCCS'.  You can
 change this using the let command:
 
-      :let Grep_Skip_Dirs = 'dir1 dir2 dir3'
+    :let Grep_Skip_Dirs = 'dir1 dir2 dir3'
 
 The 'Grep_Skip_Files' variable specifies the list of files to skip while doing
 recursive searches. By default, this is set to '*~ *,v s.*'. You can change
 this using the let command:
 
-      :let Grep_Skip_Files = '*.bak *~'
+    :let Grep_Skip_Files = '*.bak *~'
 
 By default, when you invoke the Grep commands the quickfix window will be
 opened with the grep output.  You can disable opening the quickfix window, by
 setting the 'Grep_OpenQuickfixWindow' variable  to zero:
 
-      :let Grep_OpenQuickfixWindow = 0
+    :let Grep_OpenQuickfixWindow = 0
 
 You can manually open the quickfix window using the :cwindow command.
 
@@ -332,7 +332,7 @@ utility, " then you can set the 'Grep_Find_Use_Xargs' variable to zero. If
 this is set to zero, then only the 'find' utility is used for recursive
 searches:
 
-      :let Grep_Find_Use_Xargs = 0
+    :let Grep_Find_Use_Xargs = 0
 
 To handle file names with space characters in them, the xargs utility is
 invoked with the '-0' argument. If the xargs utility in your system doesn't
@@ -340,13 +340,13 @@ accept the '-0' argument, then you can change the Grep_Xargs_Options variable.
 For example, to use the '--null' xargs argument, you can use the following
 command:
 
-	:let Grep_Xargs_Options = '--null'
+    :let Grep_Xargs_Options = '--null'
 
 The Grep_Cygwin_Find variable should be set to 1, if you are using the find
 utility from the cygwin package. This setting is used to handle the difference
 between the backslash and forward slash path separators.
 
-      :let Grep_Cygwin_Find = 1
+    :let Grep_Cygwin_Find = 1
 
 The 'Grep_Null_Device' variable specifies the name of the null device to pass
 to the grep commands. This is needed to force the grep commands to print the
@@ -354,14 +354,14 @@ name of the file in which a match is found, if only one filename is specified.
 For Unix systems, this is set to /dev/null and for MS-Windows systems, this is
 set to NUL. You can modify this by using the let command:
 
-      :let Grep_Null_Device = '/dev/null'
+    :let Grep_Null_Device = '/dev/null'
 
 The 'Grep_Shell_Escape_Char' variable specifies the escape character to use
 for protecting special characters from being interpreted by the shell.  For
 Unix systems, this is set to '\' and for MS-Window systems, this is set to an
 empty string.  You can change this using the let command:
 
-      :let Grep_Shell_Escape_Char = "'"
+    :let Grep_Shell_Escape_Char = "'"
 
 The 'Grep_Run_Async' variable specifies whether the grep commands are run
 synchronously or asynchronously. Depending on the Vim version, this variable
