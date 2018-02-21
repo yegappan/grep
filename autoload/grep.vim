@@ -1,9 +1,9 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.0
-" Last Modified: Jan 23, 2018
+" Last Modified: Feb 20, 2018
 " 
-" Plugin to integrate grep utilities with Vim
+" Plugin to integrate grep like utilities with Vim
 
 " Line continuation used here
 let s:cpo_save = &cpo
@@ -120,13 +120,13 @@ if !exists("Grep_Skip_Files")
 endif
 
 " Run the grep commands asynchronously and update the quickfix list with the
-" results in the background
+" results in the background. Needs Vim version 8.0 and above.
 if !exists('Grep_Run_Async')
     " Check whether we can run the grep command asynchronously.
     if v:version >= 800
 	let Grep_Run_Async = 1
 	" Check whether we can use the quickfix identifier to add the grep
-	" output to a specific quickfix list
+	" output to a specific quickfix list.
 	if has('patch-8.0.1023')
 	    let s:Grep_Use_QfID = 1
 	else
