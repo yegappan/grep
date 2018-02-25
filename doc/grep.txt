@@ -2,7 +2,7 @@
 
 Author: Yegappan Lakshmanan  (yegappan AT yahoo DOT com)
 For Vim version 7.0 and above
-Last change: 2018 Jan 23
+Last change: 2018 Feb 25
 
 1. Overview					|grep-overview|
 2. Installation					|grep-installation|
@@ -18,7 +18,7 @@ The grep plugin integrates the grep, fgrep, egrep, agrep, ag, ack and ripgrep
 tools with Vim and allows you to search for a pattern in one or more files and
 jump to them.
 
-To use the this plugin with grep, you will need the grep, fgrep, egrep, agrep
+To use the this plugin with grep, you will need the grep, fgrep and egrep
 utilities. To recursively search for files using grep, you will need the find
 and xargs utilities. These tools are present in most of the Unix and MacOS
 installations.  For MS-Windows systems, you can download the GNU grep and find
@@ -26,6 +26,11 @@ utilities from the following sites:
 
     http://gnuwin32.sourceforge.net/packages/grep.htm
     http://gnuwin32.sourceforge.net/packages/findutils.htm
+
+If you want to use the agrep command with this plugin, then you can download
+the agrep utility from:
+
+    https://www.tgries.de/agrep/
 
 If you want to use the Silver Searcher (ag) with this plugin, then you can
 download the Silver Searcher from:
@@ -167,6 +172,9 @@ commands.  If the <file_names> are not specified, then you will be prompted to
 enter file names.  By default, the pattern specified by the
 Grep_Default_Filelist variable is used. To specify the file name(s) as an
 argument to the above commands, you have to specify the search pattern also.
+For search utilities like ag, ack and ripgrep which searches recursively by
+default, if you don't specify the filename, then the command will search
+recursively.
 
 When you enter only the command name, you will be prompted to enter the search
 pattern and the files in which to search for the pattern. By default, the

@@ -1,7 +1,7 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.0
-" Last Modified: Feb 20, 2018
+" Last Modified: Feb 25, 2018
 " 
 " Plugin to integrate grep like utilities with Vim
 
@@ -453,6 +453,11 @@ function! s:formFullCmd(cmd_name, useropts, pattern, filenames)
 		\ a:pattern . ' ' . a:filenames . ' ' .
 		\ cmdmap[a:cmd_name].nulldev
 
+    " Some commands like ripgrep try to read from stdin. This hangs the
+    " command as Vim controls stdin. To avoid this problem, redirect stdin to
+    " the NULL device.
+    let fullcmd = fullcmd . ' < ' . g:Grep_Null_Device
+
     return fullcmd
 endfunction
 
@@ -643,6 +648,12 @@ function! grep#runGrepSpecial(cmd_name, which, action, ...)
     call s:runGrepCmd(cmd, pattern, a:action)
 endfunction
 
+" recursive_search_cmd
+" Returns TRUE if a command recursively searches by default.
+function! s:recursive_search_cmd(cmd_name)
+    return a:cmd_name == 'ag' || a:cmd_name == 'rg' || a:cmd_name == 'ack'
+endfunction
+
 " grep#runGrep()
 " Run the specified grep command
 function! grep#runGrep(cmd_name, grep_cmd, action, ...)
@@ -666,7 +677,7 @@ function! grep#runGrep(cmd_name, grep_cmd, action, ...)
 	echo "\r"
     endif
 
-    if filenames == ''
+    if filenames == '' && !s:recursive_search_cmd(a:grep_cmd)
 	let filenames = input('Search in files: ', g:Grep_Default_Filelist,
 		    \ 'file')
 	if filenames == ''
