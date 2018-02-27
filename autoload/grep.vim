@@ -379,6 +379,12 @@ function! s:parseArgs(args)
     return [cmdopt, pattern, filepattern]
 endfunction
 
+" recursive_search_cmd
+" Returns TRUE if a command recursively searches by default.
+function! s:recursive_search_cmd(cmd_name)
+    return a:cmd_name == 'ag' || a:cmd_name == 'rg' || a:cmd_name == 'ack'
+endfunction
+
 " formFullCmd()
 " Generate the full command to run based on the user supplied command name,
 " options, pattern and file names.
@@ -455,8 +461,10 @@ function! s:formFullCmd(cmd_name, useropts, pattern, filenames)
 
     " Some commands like ripgrep try to read from stdin. This hangs the
     " command as Vim controls stdin. To avoid this problem, redirect stdin to
-    " the NULL device.
-    let fullcmd = fullcmd . ' < ' . g:Grep_Null_Device
+    " the NULL device for commands that search recursively by default.
+    if s:recursive_search_cmd(a:cmd_name)
+	let fullcmd = fullcmd . ' < ' . g:Grep_Null_Device
+    endif
 
     return fullcmd
 endfunction
@@ -646,12 +654,6 @@ function! grep#runGrepSpecial(cmd_name, which, action, ...)
     " Form the complete command line and run it
     let cmd = s:formFullCmd('grep', opts, pattern, filenames)
     call s:runGrepCmd(cmd, pattern, a:action)
-endfunction
-
-" recursive_search_cmd
-" Returns TRUE if a command recursively searches by default.
-function! s:recursive_search_cmd(cmd_name)
-    return a:cmd_name == 'ag' || a:cmd_name == 'rg' || a:cmd_name == 'ack'
 endfunction
 
 " grep#runGrep()
