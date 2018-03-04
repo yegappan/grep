@@ -1,9 +1,11 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
-" Version: 2.0
-" Last Modified: Feb 25, 2018
+" Version: 2.1
+" Last Modified: March 4, 2018
 " 
 " Plugin to integrate grep like utilities with Vim
+" Supported ones are: grep, fgrep, egrep, agrep, findstr, ag, ack, ripgrep
+"
 
 " Line continuation used here
 let s:cpo_save = &cpo
@@ -42,6 +44,11 @@ endif
 " Location of the ack utility
 if !exists("Ack_Path")
     let Ack_Path = 'ack'
+endif
+
+" Location of the findstr utility
+if !exists("Findstr_Path")
+    let Findstr_Path = 'findstr.exe'
 endif
 
 " Location of the find utility
@@ -136,6 +143,68 @@ if !exists('Grep_Run_Async')
 	let Grep_Run_Async = 0
     endif
 endif
+
+" Table containing information about various grep commands.
+"   command path, option prefix character, command options and the search
+"   pattern expression option
+let s:cmdTable = {
+	    \   'grep' : {
+	    \     'cmdpath' : g:Grep_Path,
+	    \     'optprefix' : '-',
+	    \     'cmdopt' : '-s -n',
+	    \     'expropt' : '--',
+	    \     'nulldev' : g:Grep_Null_Device
+	    \   },
+	    \   'fgrep' : {
+	    \     'cmdpath' : g:Fgrep_Path,
+	    \     'optprefix' : '-',
+	    \     'cmdopt' : '-s -n',
+	    \     'expropt' : '-e',
+	    \     'nulldev' : g:Grep_Null_Device
+	    \   },
+	    \   'egrep' : {
+	    \     'cmdpath' : g:Egrep_Path,
+	    \     'optprefix' : '-',
+	    \     'cmdopt' : '-s -n',
+	    \     'expropt' : '-e',
+	    \     'nulldev' : g:Grep_Null_Device
+	    \   },
+	    \   'agrep' : {
+	    \     'cmdpath' : g:Agrep_Path,
+	    \     'optprefix' : '-',
+	    \     'cmdopt' : '-n',
+	    \     'expropt' : '',
+	    \     'nulldev' : g:Grep_Null_Device
+	    \   },
+	    \   'ag' : {
+	    \     'cmdpath' : g:Ag_Path,
+	    \     'optprefix' : '-',
+	    \     'cmdopt' : '--vimgrep',
+	    \     'expropt' : '',
+	    \     'nulldev' : ''
+	    \   },
+	    \   'rg' : {
+	    \     'cmdpath' : g:Rg_Path,
+	    \     'optprefix' : '-',
+	    \     'cmdopt' : '--vimgrep',
+	    \     'expropt' : '-e',
+	    \     'nulldev' : ''
+	    \   },
+	    \   'ack' : {
+	    \     'cmdpath' : g:Ack_Path,
+	    \     'optprefix' : '-',
+	    \     'cmdopt' : '-H --column --nofilter --nocolor --nogroup',
+	    \     'expropt' : '--match',
+	    \     'nulldev' : ''
+	    \   },
+	    \   'findstr' : {
+	    \     'cmdpath' : g:Findstr_Path,
+	    \     'optprefix' : '/',
+	    \     'cmdopt' : '/N',
+	    \     'expropt' : '',
+	    \     'nulldev' : ''
+	    \   }
+	    \ }
 
 " warnMsg
 " Display a warning message
@@ -350,13 +419,15 @@ endfunction
 " grep command-line flags are specified using the "-flag" format.
 " the next argument is assumed to be the pattern.
 " and the next arguments are assumed to be filenames or file patterns.
-function! s:parseArgs(args)
+function! s:parseArgs(cmd_name, args)
     let cmdopt    = ''
     let pattern     = ''
     let filepattern = ''
 
+    let optprefix = s:cmdTable[a:cmd_name].optprefix
+
     for one_arg in a:args
-	if one_arg[0] == '-' && pattern == ''
+	if one_arg[0] == optprefix && pattern == ''
 	    " Process grep arguments at the beginning of the argument list
 	    let cmdopt = cmdopt . ' ' . one_arg
 	elseif pattern == ''
@@ -389,75 +460,23 @@ endfunction
 " Generate the full command to run based on the user supplied command name,
 " options, pattern and file names.
 function! s:formFullCmd(cmd_name, useropts, pattern, filenames)
-    if has('win32')
-	" On MS-Windows, convert the program pathname to 8.3 style pathname.
-	" Otherwise, using a path with space characters causes problems.
-	let g:Grep_Path = fnamemodify(g:Grep_Path, ':8')
-	let g:Fgrep_Path = fnamemodify(g:Fgrep_Path, ':8')
-	let g:Egrep_Path = fnamemodify(g:Egrep_Path, ':8')
-	let g:Agrep_Path = fnamemodify(g:Agrep_Path, ':8')
-	let g:Ag_Path = fnamemodify(g:Ag_Path, ':8')
-	let g:Rg_Path = fnamemodify(g:Rg_Path, ':8')
-	let g:Ack_Path = fnamemodify(g:Ack_Path, ':8')
-    endif
-
-    " Map the various grep commands to the corresponding command path, command
-    " options and the search pattern expression option
-    let cmdmap = {
-		\   'grep' : {
-		\     'cmdpath' : g:Grep_Path,
-		\     'cmdopt' : '-s -n',
-		\     'expropt' : '--',
-		\     'nulldev' : g:Grep_Null_Device
-		\   },
-		\   'fgrep' : {
-		\     'cmdpath' : g:Fgrep_Path,
-		\     'cmdopt' : '-s -n',
-		\     'expropt' : '-e',
-		\     'nulldev' : g:Grep_Null_Device
-		\   },
-		\   'egrep' : {
-		\     'cmdpath' : g:Egrep_Path,
-		\     'cmdopt' : '-s -n',
-		\     'expropt' : '-e',
-		\     'nulldev' : g:Grep_Null_Device
-		\   },
-		\   'agrep' : {
-		\     'cmdpath' : g:Agrep_Path,
-		\     'cmdopt' : '-n',
-		\     'expropt' : '',
-		\     'nulldev' : g:Grep_Null_Device
-		\   },
-		\   'ag' : {
-		\     'cmdpath' : g:Ag_Path,
-		\     'cmdopt' : '--vimgrep',
-		\     'expropt' : '',
-		\     'nulldev' : ''
-		\   },
-		\   'rg' : {
-		\     'cmdpath' : g:Rg_Path,
-		\     'cmdopt' : '--vimgrep',
-		\     'expropt' : '-e',
-		\     'nulldev' : ''
-		\   },
-		\   'ack' : {
-		\     'cmdpath' : g:Ack_Path,
-		\     'cmdopt' : '-H --column --nofilter --nocolor --nogroup',
-		\     'expropt' : '--match',
-		\     'nulldev' : ''
-		\   }
-		\ }
-
-    if !has_key(cmdmap, a:cmd_name)
+    if !has_key(s:cmdTable, a:cmd_name)
 	call s:warnMsg('Error: Unsupported command ' . a:cmd_name)
 	return ''
     endif
 
-    let fullcmd = cmdmap[a:cmd_name].cmdpath . ' ' .
-		\ cmdmap[a:cmd_name].cmdopt . ' ' . a:useropts . ' ' .
-		\ cmdmap[a:cmd_name].expropt . ' ' .
+    if has('win32')
+	" On MS-Windows, convert the program pathname to 8.3 style pathname.
+	" Otherwise, using a path with space characters causes problems.
+	let s:cmdTable[a:cmd_name].cmdpath =
+		    \ fnamemodify(s:cmdTable[a:cmd_name].cmdpath, ':8')
+    endif
+
+    let fullcmd = s:cmdTable[a:cmd_name].cmdpath . ' ' .
+		\ s:cmdTable[a:cmd_name].cmdopt . ' ' . a:useropts . ' ' .
+		\ s:cmdTable[a:cmd_name].expropt . ' ' .
 		\ a:pattern . ' ' . a:filenames . ' ' .
-		\ cmdmap[a:cmd_name].nulldev
+		\ s:cmdTable[a:cmd_name].nulldev
 
     " Some commands like ripgrep try to read from stdin. This hangs the
     " command as Vim controls stdin. To avoid this problem, redirect stdin to
@@ -517,7 +536,7 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
 
     " Parse the arguments and get the grep options, search pattern
     " and list of file names/patterns
-    let [opts, pattern, filenames] = s:parseArgs(a:000)
+    let [opts, pattern, filenames] = s:parseArgs(a:grep_cmd, a:000)
 
     " No argument supplied. Get the identifier and file list from user
     if pattern == '' 
@@ -640,7 +659,7 @@ function! grep#runGrepSpecial(cmd_name, which, action, ...)
 
     " Parse the arguments and get the command line options and pattern.
     " Filenames are not be supplied and should be ignored.
-    let [opts, pattern, temp] = s:parseArgs(a:000)
+    let [opts, pattern, temp] = s:parseArgs(a:grep_cmd, a:000)
 
     if pattern == ''
 	" No argument supplied. Get the identifier and file list from user
@@ -667,7 +686,7 @@ function! grep#runGrep(cmd_name, grep_cmd, action, ...)
 
     " Parse the arguments and get the grep options, search pattern
     " and list of file names/patterns
-    let [opts, pattern, filenames] = s:parseArgs(a:000)
+    let [opts, pattern, filenames] = s:parseArgs(a:grep_cmd, a:000)
 
     " Get the identifier and file list from user
     if pattern == '' 

@@ -3,9 +3,9 @@ grep
 
 Plugin to integrate various grep like search tools with Vim.
 
-The grep plugin integrates the grep, fgrep, egrep, agrep, silver searcher (ag),
-ripgrep and ack tools with Vim and allows you to search for a pattern in one or
-more files and jump to them.
+The grep plugin integrates grep like utilities (grep, fgrep, egrep, agrep,
+findstr, silver searcher (ag), ripgrep and ack) with Vim and allows you to
+search for a pattern in one or more files and jump to them.
 
 To use this plugin, you will need the grep like utilities in your system.  If a
 particular utility is not present, then you cannot use the corresponding
@@ -20,6 +20,9 @@ utilities from the following sites:
 
     http://gnuwin32.sourceforge.net/packages/grep.htm
     http://gnuwin32.sourceforge.net/packages/findutils.htm
+
+On MS-Windows, you can use the findstr utility to search for patterns.
+This is available by default on all MS-Windows systems.
 
 If you want to use the agrep command with this plugin, then you can download
 the agrep utility from:

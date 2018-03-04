@@ -1,10 +1,10 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
-" Version: 2.0
-" Last Modified: Jan 23, 2018
+" Version: 2.1
+" Last Modified: March 4, 2018
 " 
-" Plugin to integrate grep utilities with Vim
-" Supported ones are: grep, fgrep, egrep, agrep, ag
+" Plugin to integrate grep like utilities with Vim
+" Supported ones are: grep, fgrep, egrep, agrep, findstr, ag, ack, ripgrep
 "
 if exists("loaded_grep")
     finish
@@ -79,6 +79,14 @@ command! -nargs=* -complete=file Ack
 	    \ call grep#runGrep('Ack', 'ack', 'set', <f-args>)
 command! -nargs=* -complete=file AckAdd
 	\ call grep#runGrep('AckAdd', 'ack', 'add', <f-args>)
+
+" findstr commands
+if has('win32')
+    command! -nargs=* -complete=file Findstr
+		\ call grep#runGrep('Findstr', 'findstr', 'set', <f-args>)
+    command! -nargs=* -complete=file FindstrAdd
+	    \ call grep#runGrep('FindstrAdd', 'findstr', 'add', <f-args>)
+endif
 
 " Buffer list grep commands
 command! -nargs=* GrepBuffer

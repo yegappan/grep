@@ -2,7 +2,7 @@
 
 Author: Yegappan Lakshmanan  (yegappan AT yahoo DOT com)
 For Vim version 7.0 and above
-Last change: 2018 Feb 25
+Last change: 2018 March 4
 
 1. Overview					|grep-overview|
 2. Installation					|grep-installation|
@@ -14,9 +14,14 @@ Last change: 2018 Feb 25
 						*grep-overview*
 1. Overview~
 
-The grep plugin integrates the grep, fgrep, egrep, agrep, ag, ack and ripgrep
-tools with Vim and allows you to search for a pattern in one or more files and
-jump to them.
+The grep plugin integrates grep like utilities (grep, fgrep, egrep, agrep,
+findstr, ag, ack and ripgrep) with Vim and allows you to search for a pattern
+in one or more files and jump to them.
+
+To use this plugin, you will need the grep like utilities in your system.  If a
+particular utility is not present, then you cannot use the corresponding
+features, but you can still use the rest of the features supported by the
+plugin.
 
 To use the this plugin with grep, you will need the grep, fgrep and egrep
 utilities. To recursively search for files using grep, you will need the find
@@ -26,6 +31,9 @@ utilities from the following sites:
 
     http://gnuwin32.sourceforge.net/packages/grep.htm
     http://gnuwin32.sourceforge.net/packages/findutils.htm
+
+On MS-Windows, you can use the findstr utility to search for patterns.
+This is available by default on all MS-Windows systems.
 
 If you want to use the agrep command with this plugin, then you can download
 the agrep utility from:
@@ -57,14 +65,21 @@ The github repository for this plugin is at https://github.com/yegappan/grep
 						*grep-installation*
 2. Installation~
 
-1. Expand the grep.zip file to the $HOME/.vim/plugin or
+You can use any one of the Vim plugin managers (dein.vim, pathogen, vam,
+vim-plug, volt, Vundle, etc.) to install and manage this plugin.
+
+Alternatively, you can also manually download and install the plugin
+using the following steps. 
+
+1. Download the grep.zip file from the https://vim.sourceforge.io site. 
+2. Expand the grep.zip file to the $HOME/.vim/plugin or
    $HOME/vimfiles/plugin or $VIM/vimfiles/plugin directory.
-2. If the grep executables are not already present in one of the directories
+3. If the grep executables are not already present in one of the directories
    in the PATH environment variable, then set the Grep_Path and other _Path
    variables to point to the location of the grep utilities in the .vimrc
    file.
-3. Restart Vim.
-4. You can now use the ":Grep" and other commands to search for patterns in
+4. Restart Vim.
+5. You can now use the ":Grep" and other commands to search for patterns in
    files.
 
 ==============================================================================
@@ -98,6 +113,9 @@ The grep.vim plugin introduces the following Vim commands:
 :Regrep        - Run recursive egrep
 :RegrepAdd     - Same as ":Regrep" but adds the results to the current
                  results
+:Findstr       - Search for a pattern in files. Available only on MS-Windows.
+:FindstrAdd    - Same as ":Findstr" but adds the results to the current
+                 results
 :Agrep         - Run agrep
 :AgrepAdd      - Same as ":Agrep" but adds the results to the current
                  results
@@ -124,9 +142,10 @@ The above commands can be invoked like this:
     :Regrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
     :Agrep  [<grep_options>] [<search_pattern> [<file_name(s)>]]
     :Ragrep [<grep_options>] [<search_pattern> [<file_name(s)>]]
-    :Ag [<grep_options>] [<search_pattern> [<file_name(s)>]]
-    :Ack [<grep_options>] [<search_pattern> [<file_name(s)>]]
-    :Rg [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :Findstr [<options>] [<search_pattern> [<file_name(s)>]]
+    :Ag [<options>] [<search_pattern> [<file_name(s)>]]
+    :Ack [<options>] [<search_pattern> [<file_name(s)>]]
+    :Rg [<options>] [<search_pattern> [<file_name(s)>]]
 
     :GrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
     :RgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
@@ -134,11 +153,12 @@ The above commands can be invoked like this:
     :RfgrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
     :EgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
     :RegrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :FindstrAdd [<options>] [<search_pattern> [<file_name(s)>]]
     :AgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
     :RagrepAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
-    :AgAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
-    :AckAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
-    :RgAdd [<grep_options>] [<search_pattern> [<file_name(s)>]]
+    :AgAdd [<options>] [<search_pattern> [<file_name(s)>]]
+    :AckAdd [<options>] [<search_pattern> [<file_name(s)>]]
+    :RgAdd [<options>] [<search_pattern> [<file_name(s)>]]
 
     :GrepBuffer [<grep_options>] [<search_pattern>]
     :Bgrep [<grep_options>] [<search_pattern>]
@@ -181,6 +201,15 @@ pattern and the files in which to search for the pattern. By default, the
 keyword under the cursor is displayed for the search pattern prompt.
 Depending on the command, you may prompted for additional parameters like the
 directories to search for the pattern.
+
+On MS-Windows, the command line options for the findstr.exe utility are
+prefixed with '/'. The ':Findstr' command accepts options prefixed with '/'.
+Examples:
+
+    " To search for 'windows' ignoring case
+    :Findstr /I windows *.java
+    " To search for 'class' recursively from the current directory
+    :Findstr /S class *.java
 
 You can retrieve previously entered values for the Grep prompts using the up
 and down arrow keys. You can cancel the command by pressing the escape key.
@@ -270,6 +299,12 @@ this is set to agrep. You can change this using the let command:
 
     :let Agrep_Path = 'C:\Progra~1\Grep\agrep.exe'
 
+The 'Findstr_Path' variable is used to locate the findstr.exe utility on
+MS-Windows. By default, this is set to findstr.exe. You can change this using
+the let command:
+
+    :let Findstr_Path = 'C:\Windows\System32\findstr.exe'
+
 The 'Ag_Path' variable is used to locate the ag (silver searcher) utility. By
 default, this is set to ag. You can change this using the let command:
 
@@ -309,8 +344,8 @@ can change this settings using the let command:
     :let Grep_Default_Filelist = '*.c *.cpp *.asm'
 
 The 'Grep_Default_Options' is used to pass default command line options to the
-grep/fgrep/egrep/agrep/ag/rg utilities. By default, this is set to an empty
-string.  You can change this using the let command:
+grep/fgrep/egrep/agrep/findstr/ag/rg utilities. By default, this is set to an
+empty string.  You can change this using the let command:
 
     :let Grep_Default_Options = '-i'
 
