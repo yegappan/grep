@@ -1,7 +1,7 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.1
-" Last Modified: March 4, 2018
+" Last Modified: March 11, 2018
 " 
 " Plugin to integrate grep like utilities with Vim
 " Supported ones are: grep, fgrep, egrep, agrep, findstr, ag, ack, ripgrep
@@ -232,7 +232,7 @@ endfunction
 function! grep#cmd_output_cb(qf_id, channel, msg)
     let job = ch_getjob(a:channel)
     if job_status(job) == 'fail'
-	call warnMsg('Error: Job not found in grep command output callback')
+	call s:warnMsg('Error: Job not found in grep command output callback')
 	return
     endif
 
@@ -262,7 +262,7 @@ endfunction
 function! grep#chan_close_cb(qf_id, channel)
     let job = ch_getjob(a:channel)
     if job_status(job) == 'fail'
-	call warnMsg('Error: Job not found in grep channel close callback')
+	call s:warnMsg('Error: Job not found in grep channel close callback')
 	return
     endif
     let emsg = '[Search command exited with status ' . job_info(job).exitval . ']'
@@ -325,7 +325,8 @@ function! s:runGrepCmdAsync(cmd, pattern, action)
     let s:grep_cmd_job = job_start(cmd_list,
 		\ {'callback' : function('grep#cmd_output_cb', [qf_id]),
 		\ 'close_cb' : function('grep#chan_close_cb', [qf_id]),
-		\ 'exit_cb' : function('grep#cmd_exit_cb', [qf_id])})
+		\ 'exit_cb' : function('grep#cmd_exit_cb', [qf_id]),
+		\ 'in_io' : 'null'})
 
     if job_status(s:grep_cmd_job) == 'fail'
 	let s:grep_cmd_job = 0
@@ -478,13 +479,6 @@ function! s:formFullCmd(cmd_name, useropts, pattern, filenames)
 		\ a:pattern . ' ' . a:filenames . ' ' .
 		\ s:cmdTable[a:cmd_name].nulldev
 
-    " Some commands like ripgrep try to read from stdin. This hangs the
-    " command as Vim controls stdin. To avoid this problem, redirect stdin to
-    " the NULL device for commands that search recursively by default.
-    if s:recursive_search_cmd(a:cmd_name)
-	let fullcmd = fullcmd . ' < ' . g:Grep_Null_Device
-    endif
-
     return fullcmd
 endfunction
 
@@ -517,7 +511,7 @@ function! s:getListOfArgFiles()
 
     let arg_cnt = argc()
     if arg_cnt != 0
-	for i in range(0, arg_cnt)
+	for i in range(0, arg_cnt - 1)
 	    let filenames = filenames . ' ' . argv(i)
 	endfor
     endif
