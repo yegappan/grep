@@ -1,33 +1,57 @@
-*grep.txt*	Plugin for integrating grep tools with Vim
+*grep.txt*	Plugin for integrating grep like tools with Vim
 
 Author: Yegappan Lakshmanan  (yegappan AT yahoo DOT com)
 For Vim version 7.0 and above
-Last change: 2018 March 4
+Last change: March 11, 2018
+
+==============================================================================
+						*grep-license*
+License: MIT License
+Copyright (c) 2002-2018 Yegappan Lakshmanan
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+==============================================================================
+CONTENTS~
 
 1. Overview					|grep-overview|
 2. Installation					|grep-installation|
 3. Usage					|grep-usage|
 4. Configuration				|grep-configuration|
-5. License					|grep-license|
 
 ==============================================================================
 						*grep-overview*
 1. Overview~
 
 The grep plugin integrates grep like utilities (grep, fgrep, egrep, agrep,
-findstr, ag, ack and ripgrep) with Vim and allows you to search for a pattern
-in one or more files and jump to them.
+findstr, silver searcher, ack and ripgrep) with Vim and allows you to search
+for a pattern in one or more files and jump to them.
 
-To use this plugin, you will need the grep like utilities in your system.  If a
-particular utility is not present, then you cannot use the corresponding
+To use this plugin, you will need the grep like utilities in your system.  If
+a particular utility is not present, then you cannot use the corresponding
 features, but you can still use the rest of the features supported by the
 plugin.
 
 To use the this plugin with grep, you will need the grep, fgrep and egrep
 utilities. To recursively search for files using grep, you will need the find
-and xargs utilities. These tools are present in most of the Unix and MacOS
-installations.  For MS-Windows systems, you can download the GNU grep and find
-utilities from the following sites:
+and xargs utilities. These tools are present in most of the Linux/Unix and
+MacOS installations.  For MS-Windows systems, you can download the GNU grep
+and find utilities from the following sites:
 
     http://gnuwin32.sourceforge.net/packages/grep.htm
     http://gnuwin32.sourceforge.net/packages/findutils.htm
@@ -233,7 +257,8 @@ current search output. This is useful if you want to see the search results
 for multiple patterns at the same time. These commands are available only in
 Vim version 7.0 and above.
 
-Some examples for using the :Ag command to search for a pattern are below:
+Some examples for using the silver searcher command to search for a pattern
+are below:
 >
     " To search for 'myclass' recursively from the current directory
     :Ag myclass .
@@ -410,16 +435,6 @@ The 'Grep_Run_Async' variable specifies whether the grep commands are run
 synchronously or asynchronously. Depending on the Vim version, this variable
 is set automatically.  If you want to force Vim to run the grep commands
 synchronously, then you can set the 'Grep_Run_Async' variable to 1.
-
-==============================================================================
-						*grep-license*
-5. License~
-Permission is hereby granted to use and distribute the grep plugin, with or
-without modifications, provided that this copyright notice is copied with it.
-Like anything else that's free, grep.vim is provided *as is* and comes with no
-warranty of any kind, either expressed or implied. In no event will the
-copyright holder be liable for any damages resulting from the use of this
-software.
 
 ==============================================================================
 
