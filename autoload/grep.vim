@@ -4,7 +4,8 @@
 " Last Modified: March 11, 2018
 " 
 " Plugin to integrate grep like utilities with Vim
-" Supported ones are: grep, fgrep, egrep, agrep, findstr, ag, ack, ripgrep
+" Supported ones are: grep, fgrep, egrep, agrep, findstr, ag, ack, ripgrep and
+" git grep
 "
 " License: MIT License
 " Copyright (c) 2002-2018 Yegappan Lakshmanan
@@ -70,6 +71,11 @@ endif
 " Location of the findstr utility
 if !exists("Findstr_Path")
     let Findstr_Path = 'findstr.exe'
+endif
+
+" Location of the git utility used by the git grep command
+if !exists("Git_Path")
+    let Git_Path = 'git'
 endif
 
 " Location of the find utility
@@ -223,6 +229,13 @@ let s:cmdTable = {
 	    \     'optprefix' : '/',
 	    \     'cmdopt' : '/N',
 	    \     'expropt' : '',
+	    \     'nulldev' : ''
+	    \   },
+	    \   'git' : {
+	    \     'cmdpath' : g:Git_Path,
+	    \     'optprefix' : '-',
+	    \     'cmdopt' : 'grep --no-color -n',
+	    \     'expropt' : '-e',
 	    \     'nulldev' : ''
 	    \   }
 	    \ }
@@ -475,7 +488,10 @@ endfunction
 " recursive_search_cmd
 " Returns TRUE if a command recursively searches by default.
 function! s:recursive_search_cmd(cmd_name)
-    return a:cmd_name == 'ag' || a:cmd_name == 'rg' || a:cmd_name == 'ack'
+    return a:cmd_name == 'ag' ||
+		\ a:cmd_name == 'rg' ||
+		\ a:cmd_name == 'ack' ||
+		\ a:cmd_name == 'git'
 endfunction
 
 " formFullCmd()

@@ -4,7 +4,8 @@
 " Last Modified: March 11, 2018
 " 
 " Plugin to integrate grep like utilities with Vim
-" Supported ones are: grep, fgrep, egrep, agrep, findstr, ag, ack, ripgrep
+" Supported ones are: grep, fgrep, egrep, agrep, findstr, ag, ack, ripgrep and
+" git grep
 "
 " License: MIT License
 " Copyright (c) 2002-2018 Yegappan Lakshmanan
@@ -100,6 +101,12 @@ command! -nargs=* -complete=file Ack
 	    \ call grep#runGrep('Ack', 'ack', 'set', <f-args>)
 command! -nargs=* -complete=file AckAdd
 	\ call grep#runGrep('AckAdd', 'ack', 'add', <f-args>)
+
+" git grep commands
+command! -nargs=* -complete=file Gitgrep
+	    \ call grep#runGrep('Gitgrep', 'git', 'set', <f-args>)
+command! -nargs=* -complete=file GitgrepAdd
+	\ call grep#runGrep('GitgrepAdd', 'git', 'add', <f-args>)
 
 " findstr commands
 if has('win32')
