@@ -4,8 +4,8 @@
 " Last Modified: March 11, 2018
 " 
 " Plugin to integrate grep like utilities with Vim
-" Supported ones are: grep, fgrep, egrep, agrep, findstr, ag, ack, ripgrep and
-" git grep
+" Supported utilities are: grep, fgrep, egrep, agrep, findstr, ag, ack,
+" ripgrep, git grep and sift
 "
 " License: MIT License
 " Copyright (c) 2002-2018 Yegappan Lakshmanan
@@ -77,6 +77,12 @@ endif
 if !exists("Git_Path")
     let Git_Path = 'git'
 endif
+
+" Location of the sift utility
+if !exists("Sift_Path")
+    let Sift_Path = 'sift'
+endif
+
 
 " Location of the find utility
 if !exists("Grep_Find_Path")
@@ -235,6 +241,13 @@ let s:cmdTable = {
 	    \     'cmdpath' : g:Git_Path,
 	    \     'optprefix' : '-',
 	    \     'cmdopt' : 'grep --no-color -n',
+	    \     'expropt' : '-e',
+	    \     'nulldev' : ''
+	    \   },
+	    \   'sift' : {
+	    \     'cmdpath' : g:Sift_Path,
+	    \     'optprefix' : '-',
+	    \     'cmdopt' : '--no-color -n --filename --binary-skip',
 	    \     'expropt' : '-e',
 	    \     'nulldev' : ''
 	    \   }
@@ -455,8 +468,8 @@ endfunction
 " the next argument is assumed to be the pattern.
 " and the next arguments are assumed to be filenames or file patterns.
 function! s:parseArgs(cmd_name, args)
-    let cmdopt    = ''
-    let pattern     = ''
+    let cmdopt = ''
+    let pattern = ''
     let filepattern = ''
 
     let optprefix = s:cmdTable[a:cmd_name].optprefix
@@ -513,8 +526,15 @@ function! s:formFullCmd(cmd_name, useropts, pattern, filenames)
     let fullcmd = s:cmdTable[a:cmd_name].cmdpath . ' ' .
 		\ s:cmdTable[a:cmd_name].cmdopt . ' ' . a:useropts . ' ' .
 		\ s:cmdTable[a:cmd_name].expropt . ' ' .
-		\ a:pattern . ' ' . a:filenames . ' ' .
-		\ s:cmdTable[a:cmd_name].nulldev
+		\ a:pattern
+
+    if a:filenames != ''
+	let fullcmd = fullcmd . ' ' . a:filenames
+    endif
+
+    if s:cmdTable[a:cmd_name].nulldev != ''
+	let fullcmd = fullcmd . ' ' . s:cmdTable[a:cmd_name].nulldev
+    endif
 
     return fullcmd
 endfunction

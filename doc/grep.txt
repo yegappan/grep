@@ -39,8 +39,8 @@ CONTENTS~
 1. Overview~
 
 The grep plugin integrates grep like utilities (grep, fgrep, egrep, agrep,
-findstr, silver searcher, ack, ripgrep and git grep) with Vim and allows you
-to search for a pattern in one or more files and jump to them.
+findstr, silver searcher, ack, ripgrep, git grep, sift) with Vim and allows
+you to search for a pattern in one or more files and jump to them.
 
 To use this plugin, you will need the grep like utilities in your system.  If
 a particular utility is not present, then you cannot use the corresponding
@@ -79,7 +79,12 @@ ripgrep utility from:
 
     https://github.com/BurntSushi/ripgrep
 
-The silver searcher, ripgrep and ack utilities can search for a pattern
+If you want to use sift with this plugin, then you can download the sift
+utility from:
+
+    https://sift-tool.org
+
+The silver searcher, ripgrep, ack and sift utilities can search for a pattern
 recursively across directories without using any other additional utilities
 like find and xargs.
 
@@ -146,6 +151,8 @@ The grep.vim plugin introduces the following Vim commands:
 :RgAdd         - Same as ":Rg" but adds the results to the current list
 :Gitgrep       - Run git grep
 :GitgrepAdd    - Same as ":Gitgrep" but adds the results to the current list
+:Sift          - Run sift
+:SiftAdd       - Same as ":Sift" but adds the results to the current list
 
 The above commands can be invoked like this:
 
@@ -162,6 +169,7 @@ The above commands can be invoked like this:
     :Ack [<options>] [<search_pattern> [<file_name(s)>]]
     :Rg [<options>] [<search_pattern> [<file_name(s)>]]
     :Gitgrep [<options>] [<search_pattern> [<file_name(s)>]]
+    :Sift [<options>] [<search_pattern> [<file_name(s)>]]
 
     :GrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
     :RgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
@@ -176,6 +184,7 @@ The above commands can be invoked like this:
     :AckAdd [<options>] [<search_pattern> [<file_name(s)>]]
     :RgAdd [<options>] [<search_pattern> [<file_name(s)>]]
     :GitgrepAdd [<options>] [<search_pattern> [<file_name(s)>]]
+    :SftAdd [<options>] [<search_pattern> [<file_name(s)>]]
 
     :GrepBuffer [<grep_options>] [<search_pattern>]
     :Bgrep [<grep_options>] [<search_pattern>]
@@ -209,9 +218,10 @@ commands.  If the <file_names> are not specified, then you will be prompted to
 enter file names.  By default, the pattern specified by the
 Grep_Default_Filelist variable is used. To specify the file name(s) as an
 argument to the above commands, you have to specify the search pattern also.
-With search utilities like ag, ack, ripgrep and git grep which searches
-recursively by default, if you don't specify the filename, then the command
-will search recursively.
+
+When using search utilities like ag, ack, ripgrep and git grep which searches
+recursively by default, if you don't specify a filename, then the command will
+search recursively.
 
 When you enter only the command name, you will be prompted to enter the search
 pattern and the files in which to search for the pattern. By default, the
@@ -284,10 +294,10 @@ When using GUI Vim, the Tools->Search menu item with a few sub-menu items is
 created for few variations of the search command.
 
 Note that when recursively searching for a pattern using the silver searcher,
-ripgrep, ack and git grep utilities, if a large number (several thousands) of
-matching files are found, then it will take some time for Vim to load all the
-files into the buffer list. In the meantime, Vim will be slow to respond or
-may not respond to keystrokes.
+ripgrep, ack, git grep or sift utilities, if a large number (several
+thousands) of matching files are found, then it will take some time for Vim to
+load all the files into the buffer list. In the meantime, Vim will be slow to
+respond or may not respond to keystrokes.
 
 ==============================================================================
 						*grep-configuration*
@@ -339,10 +349,16 @@ this is set to rg. You can change this using the let command:
     :let Rg_Path = 'C:\Progra~1\ripgrep\rg.exe'
 
 The 'Git_Path' variable is used to locate the git utility used by the Gitgrep
-commands. By default, this is set to git. You can change this using the let
+command. By default, this is set to git. You can change this using the let
 command:
 
     :let Git_Path = 'C:\Progra~1\git\git.exe'
+
+The 'Sift_Path' variable is used to locate the sift utility used by the
+Siftgrep command. By default, this is set to sift. You can change this using
+the let command:
+
+    :let Sift_Path = 'C:\Progra~1\sift\sift.exe'
 
 The 'Grep_Find_Path' variable is used to locate the find utility. By default,
 this is set to 'find'. Note that on MS-Windows, there is a find.exe that is
