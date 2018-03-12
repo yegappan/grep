@@ -197,8 +197,9 @@ The above commands can be invoked like this:
 In the above commands, all the arguments are optional.
 
 You can specify grep options like -i (ignore case) or -w (search for a word)
-to the above commands.  If the <grep_options> are not specified, then the
-default grep options specified by the variable Grep_Default_Options is used.
+to the above commands.  To always pass a set of command line flags to the
+grep command, you can set the Grep_Options variable. There are similar
+variables for other commands.
 
 You can specify the grep pattern to search as an argument to the above
 commands.  If the <search_pattern> is not specified, then you will be prompted
@@ -383,11 +384,16 @@ can change this settings using the let command:
     :let Grep_Default_Filelist = '*.[chS]'
     :let Grep_Default_Filelist = '*.c *.cpp *.asm'
 
-The 'Grep_Default_Options' is used to pass default command line options to the
-grep/fgrep/egrep/agrep/findstr/ag/rg utilities. By default, this is set to an
-empty string.  You can change this using the let command:
+The 'Grep_Options' variable is used to pass command line options to the grep
+command. By default, this is set to an empty string.  You can change this
+using the let command:
 
-    :let Grep_Default_Options = '-i'
+    :let Grep_Options = '-i'
+
+Similarly you can pass command line options to other commands by setting the
+'Fgrep_Options', 'Egrep_Options', 'Agrep_Options', 'Findstr_Options',
+'Ag_options', 'Ack_Options', 'Rg_Options', "Gitgrep_Options' and
+'Sift_Options' variables in your .vimrc file.
 
 The 'Grep_Skip_Dirs' variable specifies the list of directories to skip while
 doing recursive searches. By default, this is set to 'RCS CVS SCCS'.  You can

@@ -83,6 +83,55 @@ if !exists("Sift_Path")
     let Sift_Path = 'sift'
 endif
 
+" grep options
+if !exists("Grep_Options")
+    let Grep_Options = ''
+endif
+
+" fgrep options
+if !exists("Fgrep_Options")
+    let Fgrep_Options = ''
+endif
+
+" egrep options
+if !exists("Egrep_Options")
+    let Egrep_Options = ''
+endif
+
+" agrep options
+if !exists("Agrep_Options")
+    let Agrep_Options = ''
+endif
+
+" ag options
+if !exists("Ag_Options")
+    let Ag_Options = ''
+endif
+
+" ripgrep options
+if !exists("Rg_Options")
+    let Rg_Options = ''
+endif
+
+" ack options
+if !exists("Ack_Options")
+    let Ack_Options = ''
+endif
+
+" findstr options
+if !exists("Findstr_Options")
+    let Findstr_Options = ''
+endif
+
+" git grep options
+if !exists("Gitgrep_Options")
+    let Gitgrep_Options = ''
+endif
+
+" sift options
+if !exists("Sift_Options")
+    let Sift_Options = ''
+endif
 
 " Location of the find utility
 if !exists("Grep_Find_Path")
@@ -104,11 +153,6 @@ endif
 " Default grep file list
 if !exists("Grep_Default_Filelist")
     let Grep_Default_Filelist = '*'
-endif
-
-" Default grep options
-if !exists("Grep_Default_Options")
-    let Grep_Default_Options = ''
 endif
 
 " Use the 'xargs' utility in combination with the 'find' utility. Set this
@@ -184,70 +228,80 @@ let s:cmdTable = {
 	    \   'grep' : {
 	    \     'cmdpath' : g:Grep_Path,
 	    \     'optprefix' : '-',
-	    \     'cmdopt' : '-s -n',
+	    \     'defopts' : '-s -n',
+	    \     'opts' : g:Grep_Options,
 	    \     'expropt' : '--',
 	    \     'nulldev' : g:Grep_Null_Device
 	    \   },
 	    \   'fgrep' : {
 	    \     'cmdpath' : g:Fgrep_Path,
 	    \     'optprefix' : '-',
-	    \     'cmdopt' : '-s -n',
+	    \     'defopts' : '-s -n',
+	    \     'opts' : g:Fgrep_Options,
 	    \     'expropt' : '-e',
 	    \     'nulldev' : g:Grep_Null_Device
 	    \   },
 	    \   'egrep' : {
 	    \     'cmdpath' : g:Egrep_Path,
 	    \     'optprefix' : '-',
-	    \     'cmdopt' : '-s -n',
+	    \     'defopts' : '-s -n',
+	    \     'opts' : g:Egrep_Options,
 	    \     'expropt' : '-e',
 	    \     'nulldev' : g:Grep_Null_Device
 	    \   },
 	    \   'agrep' : {
 	    \     'cmdpath' : g:Agrep_Path,
 	    \     'optprefix' : '-',
-	    \     'cmdopt' : '-n',
+	    \     'defopts' : '-n',
+	    \     'opts' : g:Agrep_Options,
 	    \     'expropt' : '',
 	    \     'nulldev' : g:Grep_Null_Device
 	    \   },
 	    \   'ag' : {
 	    \     'cmdpath' : g:Ag_Path,
 	    \     'optprefix' : '-',
-	    \     'cmdopt' : '--vimgrep',
+	    \     'defopts' : '--vimgrep',
+	    \     'opts' : g:Ag_Options,
 	    \     'expropt' : '',
 	    \     'nulldev' : ''
 	    \   },
 	    \   'rg' : {
 	    \     'cmdpath' : g:Rg_Path,
 	    \     'optprefix' : '-',
-	    \     'cmdopt' : '--vimgrep',
+	    \     'defopts' : '--vimgrep',
+	    \     'opts' : g:Rg_Options,
 	    \     'expropt' : '-e',
 	    \     'nulldev' : ''
 	    \   },
 	    \   'ack' : {
 	    \     'cmdpath' : g:Ack_Path,
 	    \     'optprefix' : '-',
-	    \     'cmdopt' : '-H --column --nofilter --nocolor --nogroup',
+	    \     'defopts' : '-H --column --nofilter --nocolor --nogroup',
+	    \     'opts' : g:Ack_Options,
 	    \     'expropt' : '--match',
 	    \     'nulldev' : ''
 	    \   },
 	    \   'findstr' : {
 	    \     'cmdpath' : g:Findstr_Path,
 	    \     'optprefix' : '/',
-	    \     'cmdopt' : '/N',
+	    \     'defopts' : '/N',
+	    \     'opts' : g:Findstr_Options,
 	    \     'expropt' : '',
 	    \     'nulldev' : ''
 	    \   },
 	    \   'git' : {
 	    \     'cmdpath' : g:Git_Path,
 	    \     'optprefix' : '-',
-	    \     'cmdopt' : 'grep --no-color -n',
+	    \     'defopts' : 'grep --no-color -n',
+	    \     'opts' : g:Gitgrep_Options,
 	    \     'expropt' : '-e',
 	    \     'nulldev' : ''
 	    \   },
 	    \   'sift' : {
 	    \     'cmdpath' : g:Sift_Path,
 	    \     'optprefix' : '-',
-	    \     'cmdopt' : '--no-color -n --filename --binary-skip',
+	    \     'defopts' : '--no-color -n --filename --binary-skip',
+	    \     'opts' : g:Sift_Options,
 	    \     'expropt' : '-e',
 	    \     'nulldev' : ''
 	    \   }
@@ -491,10 +545,6 @@ function! s:parseArgs(cmd_name, args)
 	endif
     endfor
 
-    if cmdopt == ''
-	let cmdopt = g:Grep_Default_Options
-    endif
-
     return [cmdopt, pattern, filepattern]
 endfunction
 
@@ -523,9 +573,19 @@ function! s:formFullCmd(cmd_name, useropts, pattern, filenames)
 		    \ fnamemodify(s:cmdTable[a:cmd_name].cmdpath, ':8')
     endif
 
+    let cmdopt = s:cmdTable[a:cmd_name].defopts
+    if s:cmdTable[a:cmd_name].opts != ''
+	let cmdopt = cmdopt . ' ' . s:cmdTable[a:cmd_name].opts
+    endif
+    if a:useropts != ''
+	let cmdopt = cmdopt . ' ' . a:useropts
+    endif
+    if s:cmdTable[a:cmd_name].expropt != ''
+	let cmdopt = cmdopt . ' ' . s:cmdTable[a:cmd_name].expropt
+    endif
+
     let fullcmd = s:cmdTable[a:cmd_name].cmdpath . ' ' .
-		\ s:cmdTable[a:cmd_name].cmdopt . ' ' . a:useropts . ' ' .
-		\ s:cmdTable[a:cmd_name].expropt . ' ' .
+		\ cmdopt . ' ' .
 		\ a:pattern
 
     if a:filenames != ''
