@@ -2,7 +2,7 @@
 
 Author: Yegappan Lakshmanan  (yegappan AT yahoo DOT com)
 For Vim version 7.0 and above
-Last change: March 11, 2018
+Last change: March 13, 2018
 
 ==============================================================================
 						*grep-license*
@@ -39,8 +39,9 @@ CONTENTS~
 1. Overview~
 
 The grep plugin integrates grep like utilities (grep, fgrep, egrep, agrep,
-findstr, silver searcher, ack, ripgrep, git grep, sift) with Vim and allows
-you to search for a pattern in one or more files and jump to them.
+findstr, silver searcher, ack, ripgrep, git grep, sift and platinum searcher)
+with Vim and allows you to search for a pattern in one or more files and jump
+to them.
 
 To use this plugin, you will need the grep like utilities in your system.  If
 a particular utility is not present, then you cannot use the corresponding
@@ -79,14 +80,19 @@ ripgrep utility from:
 
     https://github.com/BurntSushi/ripgrep
 
-If you want to use sift with this plugin, then you can download the sift
-utility from:
+If you want to use the sift utility with this plugin, then you can download
+the sift utility from:
 
     https://sift-tool.org
 
-The silver searcher, ripgrep, ack and sift utilities can search for a pattern
-recursively across directories without using any other additional utilities
-like find and xargs.
+If you want to use the platinum searcher with this plugin, then you can
+download the platinum searcher utility from:
+
+    https://github.com/monochromegane/the_platinum_searcher
+
+The silver searcher, ripgrep, ack, sift and platinum searcher utilities can
+search for a pattern recursively across directories without using any other
+additional utilities like find and xargs.
 
 The github repository for this plugin is at https://github.com/yegappan/grep
 
@@ -153,6 +159,8 @@ The grep.vim plugin introduces the following Vim commands:
 :GitgrepAdd    - Same as ":Gitgrep" but adds the results to the current list
 :Sift          - Run sift
 :SiftAdd       - Same as ":Sift" but adds the results to the current list
+:Ptgrep        - Run the platinum searcher (pt)
+:PtgrepAdd     - Same as ":Ptgrep" but adds the results to the current list
 
 The above commands can be invoked like this:
 
@@ -170,6 +178,7 @@ The above commands can be invoked like this:
     :Rg [<options>] [<search_pattern> [<file_name(s)>]]
     :Gitgrep [<options>] [<search_pattern> [<file_name(s)>]]
     :Sift [<options>] [<search_pattern> [<file_name(s)>]]
+    :Ptgrep [<options>] [<search_pattern> [<file_name(s)>]]
 
     :GrepAdd   [<grep_options>] [<search_pattern> [<file_name(s)>]]
     :RgrepAdd  [<grep_options>] [<search_pattern> [<file_name(s)>]]
@@ -184,7 +193,8 @@ The above commands can be invoked like this:
     :AckAdd [<options>] [<search_pattern> [<file_name(s)>]]
     :RgAdd [<options>] [<search_pattern> [<file_name(s)>]]
     :GitgrepAdd [<options>] [<search_pattern> [<file_name(s)>]]
-    :SftAdd [<options>] [<search_pattern> [<file_name(s)>]]
+    :SiftAdd [<options>] [<search_pattern> [<file_name(s)>]]
+    :PtgrepAdd [<options>] [<search_pattern> [<file_name(s)>]]
 
     :GrepBuffer [<grep_options>] [<search_pattern>]
     :Bgrep [<grep_options>] [<search_pattern>]
@@ -295,10 +305,10 @@ When using GUI Vim, the Tools->Search menu item with a few sub-menu items is
 created for few variations of the search command.
 
 Note that when recursively searching for a pattern using the silver searcher,
-ripgrep, ack, git grep or sift utilities, if a large number (several
-thousands) of matching files are found, then it will take some time for Vim to
-load all the files into the buffer list. In the meantime, Vim will be slow to
-respond or may not respond to keystrokes.
+ripgrep, ack, git grep, sift or platinum searcher utilities, if a large number
+(several thousands) of matching files are found, then it will take some time
+for Vim to load all the files into the buffer list. In the meantime, Vim will
+be slow to respond or may not respond to keystrokes.
 
 ==============================================================================
 						*grep-configuration*
@@ -355,11 +365,17 @@ command:
 
     :let Git_Path = 'C:\Progra~1\git\git.exe'
 
-The 'Sift_Path' variable is used to locate the sift utility used by the
-Siftgrep command. By default, this is set to sift. You can change this using
-the let command:
+The 'Sift_Path' variable is used to locate the sift utility used by the Sift
+command. By default, this is set to sift. You can change this using the let
+command:
 
     :let Sift_Path = 'C:\Progra~1\sift\sift.exe'
+
+The 'Pt_Path' variable is used to locate the platinum searcher utility used by
+the Ptgrep command. By default, this is set to pt. You can change this
+using the let command:
+
+    :let Pt_Path = 'C:\Progra~1\pt\pt.exe'
 
 The 'Grep_Find_Path' variable is used to locate the find utility. By default,
 this is set to 'find'. Note that on MS-Windows, there is a find.exe that is
@@ -392,8 +408,8 @@ using the let command:
 
 Similarly you can pass command line options to other commands by setting the
 'Fgrep_Options', 'Egrep_Options', 'Agrep_Options', 'Findstr_Options',
-'Ag_options', 'Ack_Options', 'Rg_Options', "Gitgrep_Options' and
-'Sift_Options' variables in your .vimrc file.
+'Ag_options', 'Ack_Options', 'Rg_Options', "Gitgrep_Options', 'Sift_Options'
+and 'Pt_Options' variables in your .vimrc file.
 
 The 'Grep_Skip_Dirs' variable specifies the list of directories to skip while
 doing recursive searches. By default, this is set to 'RCS CVS SCCS'.  You can

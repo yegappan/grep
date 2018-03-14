@@ -1,11 +1,11 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.1
-" Last Modified: March 11, 2018
+" Last Modified: March 13, 2018
 " 
 " Plugin to integrate grep like utilities with Vim
 " Supported utilities are: grep, fgrep, egrep, agrep, findstr, ag, ack,
-" ripgrep, git grep and sift
+" ripgrep, git grep, sift and platinum searcher
 "
 " License: MIT License
 " Copyright (c) 2002-2018 Yegappan Lakshmanan
@@ -113,6 +113,12 @@ command! -nargs=* -complete=file Sift
 	    \ call grep#runGrep('Sift', 'sift', 'set', <f-args>)
 command! -nargs=* -complete=file SiftAdd
 	\ call grep#runGrep('SiftAdd', 'sift', 'add', <f-args>)
+
+" Platinum Searcher commands
+command! -nargs=* -complete=file Ptgrep
+	    \ call grep#runGrep('Ptgrep', 'pt', 'set', <f-args>)
+command! -nargs=* -complete=file PtgrepAdd
+	\ call grep#runGrep('PtgrepAdd', 'pt', 'add', <f-args>)
 
 " findstr commands
 if has('win32')

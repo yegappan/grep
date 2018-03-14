@@ -1,11 +1,11 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.1
-" Last Modified: March 11, 2018
+" Last Modified: March 13, 2018
 " 
 " Plugin to integrate grep like utilities with Vim
 " Supported utilities are: grep, fgrep, egrep, agrep, findstr, ag, ack,
-" ripgrep, git grep and sift
+" ripgrep, git grep, sift and platinum searcher
 "
 " License: MIT License
 " Copyright (c) 2002-2018 Yegappan Lakshmanan
@@ -83,6 +83,11 @@ if !exists("Sift_Path")
     let Sift_Path = 'sift'
 endif
 
+" Location of the platinum searcher utility
+if !exists("Pt_Path")
+    let Pt_Path = 'pt'
+endif
+
 " grep options
 if !exists("Grep_Options")
     let Grep_Options = ''
@@ -131,6 +136,11 @@ endif
 " sift options
 if !exists("Sift_Options")
     let Sift_Options = ''
+endif
+
+" pt options
+if !exists("Pt_Options")
+    let Pt_Options = ''
 endif
 
 " Location of the find utility
@@ -303,6 +313,14 @@ let s:cmdTable = {
 	    \     'defopts' : '--no-color -n --filename --binary-skip',
 	    \     'opts' : g:Sift_Options,
 	    \     'expropt' : '-e',
+	    \     'nulldev' : ''
+	    \   },
+	    \   'pt' : {
+	    \     'cmdpath' : g:Pt_Path,
+	    \     'optprefix' : '-',
+	    \     'defopts' : '--nocolor --nogroup',
+	    \     'opts' : g:Pt_Options,
+	    \     'expropt' : '',
 	    \     'nulldev' : ''
 	    \   }
 	    \ }
@@ -554,7 +572,8 @@ function! s:recursive_search_cmd(cmd_name)
     return a:cmd_name == 'ag' ||
 		\ a:cmd_name == 'rg' ||
 		\ a:cmd_name == 'ack' ||
-		\ a:cmd_name == 'git'
+		\ a:cmd_name == 'git' ||
+		\ a:cmd_name == 'pt'
 endfunction
 
 " formFullCmd()
