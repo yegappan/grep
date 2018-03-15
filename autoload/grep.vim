@@ -439,7 +439,7 @@ function! s:runGrepCmdAsync(cmd, pattern, action)
     if has('win32') && !has('win32unix') && (&shell =~ 'cmd.exe')
 	let cmd_list = [a:cmd]
     else
-	let cmd_list = ['/bin/sh', '-c', a:cmd]
+	let cmd_list = [&shell, &shellcmdflag, a:cmd]
     endif
     let s:grep_cmd_job = job_start(cmd_list,
 		\ {'callback' : function('grep#cmd_output_cb', [qf_id]),
@@ -688,8 +688,22 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
     endif
     echo "\r"
 
+    if !isdirectory(startdir)
+	call s:warnMsg('Error: Directory ' . startdir . " doesn't exist")
+	return
+    endif
+
+    " To compare against the current directory, convert to full path
+    let startdir = fnamemodify(startdir, ':p')
+
     if startdir == cwd
 	let startdir = '.'
+    endif
+
+    " On MS-Windows, convert the directory name to 8.3 style pathname.
+    " Otherwise, using a path with space characters causes problems.
+    if has('win32')
+	let startdir = fnamemodify(startdir, ':8')
     endif
 
     if filenames == ''
