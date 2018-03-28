@@ -8,6 +8,11 @@ findstr, silver searcher (ag), ripgrep, ack, git grep, sift and platinum
 searcher) with Vim and allows you to search for a pattern in one or more files
 and jump to them.
 
+In Vim version 8.0 and above, the search command is run asynchronously
+in the background and the results are added to a quickfix list.
+
+This plugin works only with Vim and not with neovim.
+
 To use this plugin, you will need the grep like utilities in your system.  If a
 particular utility is not present, then you cannot use the corresponding
 features, but you can still use the rest of the features supported by the
