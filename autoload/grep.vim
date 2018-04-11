@@ -778,6 +778,8 @@ endfunction
 " Search for a pattern in all the opened buffers or filenames in the
 " argument list
 function! grep#runGrepSpecial(cmd_name, which, action, ...)
+    let grep_cmd = 'grep'
+
     if a:0 > 0 && (a:1 == '-?' || a:1 == '-h')
 	echo 'Usage: ' . a:cmd_name . ' [<grep_options>] [<search_pattern>]'
 	return
@@ -803,7 +805,7 @@ function! grep#runGrepSpecial(cmd_name, which, action, ...)
 
     " Parse the arguments and get the command line options and pattern.
     " Filenames are not be supplied and should be ignored.
-    let [opts, pattern, temp] = s:parseArgs(a:grep_cmd, a:000)
+    let [opts, pattern, temp] = s:parseArgs(grep_cmd, a:000)
 
     if pattern == ''
 	" No argument supplied. Get the identifier and file list from user
@@ -815,7 +817,7 @@ function! grep#runGrepSpecial(cmd_name, which, action, ...)
     endif
 
     " Form the complete command line and run it
-    let cmd = s:formFullCmd('grep', opts, pattern, filenames)
+    let cmd = s:formFullCmd(grep_cmd, opts, pattern, filenames)
     call s:runGrepCmd(cmd, pattern, a:action)
 endfunction
 
