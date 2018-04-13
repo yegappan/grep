@@ -778,6 +778,8 @@ endfunction
 " Search for a pattern in all the opened buffers or filenames in the
 " argument list
 function! grep#runGrepSpecial(cmd_name, which, action, ...)
+    let grep_cmd = 'grep'
+
     if a:0 > 0 && (a:1 == '-?' || a:1 == '-h')
 	echo 'Usage: ' . a:cmd_name . ' [<options>] [<search_pattern>]'
 	return
