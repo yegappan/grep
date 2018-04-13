@@ -1,7 +1,7 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.1
-" Last Modified: March 13, 2018
+" Last Modified: April 13, 2018
 " 
 " Plugin to integrate grep like utilities with Vim
 " Supported utilities are: grep, fgrep, egrep, agrep, findstr, ag, ack,
@@ -659,7 +659,7 @@ endfunction
 " Run specified grep command recursively
 function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
     if a:0 > 0 && (a:1 == '-?' || a:1 == '-h')
-	echo 'Usage: ' . a:cmd_name . ' [<grep_options>] [<search_pattern> ' .
+	echo 'Usage: ' . a:cmd_name . ' [<options>] [<search_pattern> ' .
 		    \ '[<file_name(s)>]]'
 	return
     endif
@@ -779,7 +779,7 @@ endfunction
 " argument list
 function! grep#runGrepSpecial(cmd_name, which, action, ...)
     if a:0 > 0 && (a:1 == '-?' || a:1 == '-h')
-	echo 'Usage: ' . a:cmd_name . ' [<grep_options>] [<search_pattern>]'
+	echo 'Usage: ' . a:cmd_name . ' [<options>] [<search_pattern>]'
 	return
     endif
 
@@ -801,9 +801,17 @@ function! grep#runGrepSpecial(cmd_name, which, action, ...)
 	endif
     endif
 
+    if has('win32') && !has('win32unix')
+	" On Windows-like systems, use 'findstr' to search in buffers/arglist
+	let grep_cmd = 'findstr'
+    else
+	" On all other systems, use 'grep' to search in buffers/arglist
+	let grep_cmd = 'grep'
+    endif
+
     " Parse the arguments and get the command line options and pattern.
     " Filenames are not be supplied and should be ignored.
-    let [opts, pattern, temp] = s:parseArgs(a:grep_cmd, a:000)
+    let [opts, pattern, temp] = s:parseArgs(grep_cmd, a:000)
 
     if pattern == ''
 	" No argument supplied. Get the identifier and file list from user
@@ -815,7 +823,7 @@ function! grep#runGrepSpecial(cmd_name, which, action, ...)
     endif
 
     " Form the complete command line and run it
-    let cmd = s:formFullCmd('grep', opts, pattern, filenames)
+    let cmd = s:formFullCmd(grep_cmd, opts, pattern, filenames)
     call s:runGrepCmd(cmd, pattern, a:action)
 endfunction
 
@@ -823,7 +831,7 @@ endfunction
 " Run the specified grep command
 function! grep#runGrep(cmd_name, grep_cmd, action, ...)
     if a:0 > 0 && (a:1 == '-?' || a:1 == '-h')
-	echo 'Usage: ' . a:cmd_name . ' [<grep_options>] [<search_pattern> ' .
+	echo 'Usage: ' . a:cmd_name . ' [<options>] [<search_pattern> ' .
 		    \ '[<file_name(s)>]]'
 	return
     endif
