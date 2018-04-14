@@ -2,7 +2,7 @@
 
 Author: Yegappan Lakshmanan  (yegappan AT yahoo DOT com)
 For Vim version 7.0 and above
-Last change: March 13, 2018
+Last change: April 14, 2018
 
 ==============================================================================
 						*grep-license*
@@ -412,14 +412,16 @@ Similarly you can pass command line options to other commands by setting the
 and 'Pt_Options' variables in your .vimrc file.
 
 The 'Grep_Skip_Dirs' variable specifies the list of directories to skip while
-doing recursive searches. By default, this is set to 'RCS CVS SCCS'.  You can
+doing recursive searches. This is used only by the :Rgrep, :Rfgrep, :Regrep,
+and :Ragrep commands. By default, this is set to 'RCS CVS SCCS'.  You can
 change this using the let command:
 
     :let Grep_Skip_Dirs = 'dir1 dir2 dir3'
 
 The 'Grep_Skip_Files' variable specifies the list of files to skip while doing
-recursive searches. By default, this is set to '*~ *,v s.*'. You can change
-this using the let command:
+recursive searches. This is used only by the :Rgrep, :Rfgrep, :Regrep, and
+:Ragrep commands. By default, this is set to '*~ *,v s.*'. You can change this
+using the let command:
 
     :let Grep_Skip_Files = '*.bak *~'
 
