@@ -1,7 +1,7 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.1
-" Last Modified: April 13, 2018
+" Last Modified: April 14, 2018
 " 
 " Plugin to integrate grep like utilities with Vim
 " Supported utilities are: grep, fgrep, egrep, agrep, findstr, ag, ack,
@@ -694,16 +694,16 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
     endif
 
     " To compare against the current directory, convert to full path
-    let startdir = fnamemodify(startdir, ':p')
+    let startdir = fnamemodify(startdir, ':p:h')
 
     if startdir == cwd
 	let startdir = '.'
-    endif
-
-    " On MS-Windows, convert the directory name to 8.3 style pathname.
-    " Otherwise, using a path with space characters causes problems.
-    if has('win32')
-	let startdir = fnamemodify(startdir, ':8')
+    else
+	" On MS-Windows, convert the directory name to 8.3 style pathname.
+	" Otherwise, using a path with space characters causes problems.
+	if has('win32')
+	    let startdir = fnamemodify(startdir, ':8')
+	endif
     endif
 
     if filenames == ''
@@ -737,7 +737,8 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
 	endfor
 
 	let find_prune = '-type d ' . g:Grep_Shell_Escape_Char . '(' .
-		    \ find_prune . ' ' . g:Grep_Shell_Escape_Char . ')'
+		    \ find_prune . ' ' . g:Grep_Shell_Escape_Char . ')' .
+		    \ ' -prune -o'
     endif
 
     let find_skip_files = '-type f'
@@ -755,7 +756,7 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
     if g:Grep_Find_Use_Xargs == 1
 	let grep_cmd = s:formFullCmd(a:grep_cmd, opts, pattern, '')
 	let cmd = g:Grep_Find_Path . ' "' . startdir . '"'
-		    \ . ' ' . find_prune . " -prune -o"
+		    \ . ' ' . find_prune
 		    \ . ' ' . find_skip_files
 		    \ . ' ' . find_file_pattern
 		    \ . " -print0 | "
