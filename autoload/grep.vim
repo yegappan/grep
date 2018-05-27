@@ -231,7 +231,7 @@ if !exists('Grep_Run_Async')
 	let Grep_Run_Async = 1
 	" Check whether we can use the quickfix identifier to add the grep
 	" output to a specific quickfix list.
-	if has('patch-8.0.1023')
+	if v:version >= 801 || has('patch-8.0.1023')
 	    let s:Grep_Use_QfID = 1
 	else
 	    let s:Grep_Use_QfID = 0
