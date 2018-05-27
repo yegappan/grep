@@ -30,41 +30,20 @@ utilities from the following sites:
 On MS-Windows, you can use the findstr utility to search for patterns.
 This is available by default on all MS-Windows systems.
 
-If you want to use the agrep command with this plugin, then you can download
-the agrep utility from:
+The plugin supports various search utilities listed in the table below.
 
-    https://www.tgries.de/agrep/
+Search Tool | Home Page | Grep Plugin Commands |
+----------- | ----------| --------------------|
+Ripgrep | https://github.com/BurntSushi/ripgrep | :Rg
+Silver Searcher | https://github.com/ggreer/the_silver_searcher | :Ag
+Git grep | https://git-scm.com/ | :Gitgrep
+Ack | https://beyondgrep.com/ | :Ack
+Sift | https://sift-tool.org | :Sift
+Platinum Searcher | https://github.com/monochromegane/the_platinum_searcher | :Ptgrep
+Universal Code Grep | https://gvansickle.github.io/ucg | :Ucgrep
+agrep | https://www.tgries.de/agrep | :Agrep
 
-If you want to use the Silver Searcher (ag) with this plugin, then you can
-download the Silver Searcher from:
-
-    https://github.com/ggreer/the_silver_searcher
-
-If you want to use the ack utility with this plugin, then you can
-download the ack utility from:
-
-    https://beyondgrep.com/
-
-If you want to use ripgrep (rg) with this plugin, then you can download the
-ripgrep utility from:
-
-    https://github.com/BurntSushi/ripgrep
-
-If you want to use sift with this plugin, then you can download the sift
-utility from:
-
-    https://sift-tool.org
-
-If you want to use the platinum searcher (pt) with this plugin, then you can
-download the platinum searcher utility from:
-
-    https://github.com/monochromegane/the_platinum_searcher
-
-If you want to use the universal code grep with this plugin, then you can
-download the universal code grep utility from:
-
-    https://gvansickle.github.io/ucg
-
-The silver searcher, ripgrep, ack, sift, platinum searcher and universal code
-grep utilities can search for a pattern recursively across directories without
-using any other additional utilities like find and xargs.
+The ripgrep, silver searcher, git grep, ack, sift, platinum searcher and
+universal code grep utilities can search for a pattern recursively
+across directories without using any other additional utilities like
+find and xargs.
