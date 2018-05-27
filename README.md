@@ -32,7 +32,7 @@ This is available by default on all MS-Windows systems.
 
 The plugin supports various search utilities listed in the table below.
 
-Search Tool | Home Page | Grep Plugin Commands |
+Search Tool | Home Page | Grep Plugin Command |
 ----------- | ----------| --------------------|
 Ripgrep | https://github.com/BurntSushi/ripgrep | :Rg
 Silver Searcher | https://github.com/ggreer/the_silver_searcher | :Ag
