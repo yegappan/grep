@@ -1,11 +1,11 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
-" Version: 2.1
-" Last Modified: April 14, 2018
+" Version: 2.2
+" Last Modified: May 26, 2018
 " 
 " Plugin to integrate grep like utilities with Vim
 " Supported utilities are: grep, fgrep, egrep, agrep, findstr, ag, ack,
-" ripgrep, git grep, sift and platinum searcher
+" ripgrep, git grep, sift, platinum searcher and universal code grep
 "
 " License: MIT License
 " Copyright (c) 2002-2018 Yegappan Lakshmanan
@@ -88,6 +88,11 @@ if !exists("Pt_Path")
     let Pt_Path = 'pt'
 endif
 
+" Location of the Universal Code Grep (UCG) utility
+if !exists("Ucg_Path")
+    let Ucg_Path = 'ucg'
+endif
+
 " grep options
 if !exists("Grep_Options")
     let Grep_Options = ''
@@ -141,6 +146,11 @@ endif
 " pt options
 if !exists("Pt_Options")
     let Pt_Options = ''
+endif
+
+" ucg options
+if !exists("Ucg_Options")
+    let Ucg_Options = ''
 endif
 
 " Location of the find utility
@@ -320,6 +330,14 @@ let s:cmdTable = {
 	    \     'optprefix' : '-',
 	    \     'defopts' : '--nocolor --nogroup',
 	    \     'opts' : g:Pt_Options,
+	    \     'expropt' : '',
+	    \     'nulldev' : ''
+	    \   },
+	    \   'ucg' : {
+	    \     'cmdpath' : g:Ucg_Path,
+	    \     'optprefix' : '-',
+	    \     'defopts' : '--nocolor',
+	    \     'opts' : g:Ucg_Options,
 	    \     'expropt' : '',
 	    \     'nulldev' : ''
 	    \   }

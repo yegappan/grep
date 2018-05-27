@@ -4,9 +4,9 @@ grep
 Plugin to integrate various grep like search tools with Vim.
 
 The grep plugin integrates grep like utilities (grep, fgrep, egrep, agrep,
-findstr, silver searcher (ag), ripgrep, ack, git grep, sift and platinum
-searcher) with Vim and allows you to search for a pattern in one or more files
-and jump to them.
+findstr, silver searcher (ag), ripgrep, ack, git grep, sift, platinum searcher
+and universal code grep) with Vim and allows you to search for a pattern in one
+or more files and jump to them.
 
 In Vim version 8.0 and above, the search command is run asynchronously
 in the background and the results are added to a quickfix list.
@@ -60,6 +60,11 @@ download the platinum searcher utility from:
 
     https://github.com/monochromegane/the_platinum_searcher
 
-The silver searcher, ripgrep, ack and platinum searcher utilities can search
-for a pattern recursively across directories without using any other additional
-utilities like find and xargs.
+If you want to use the universal code grep with this plugin, then you can
+download the universal code grep utility from:
+
+    https://gvansickle.github.io/ucg
+
+The silver searcher, ripgrep, ack, sift, platinum searcher and universal code
+grep utilities can search for a pattern recursively across directories without
+using any other additional utilities like find and xargs.
