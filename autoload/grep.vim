@@ -1,11 +1,11 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.2
-" Last Modified: May 26, 2018
+" Last Modified: May 27, 2018
 " 
 " Plugin to integrate grep like utilities with Vim
 " Supported utilities are: grep, fgrep, egrep, agrep, findstr, ag, ack,
-" ripgrep, git grep, sift, platinum searcher and universal code grep
+" ripgrep, git grep, sift, platinum searcher and universal code grep.
 "
 " License: MIT License
 " Copyright (c) 2002-2018 Yegappan Lakshmanan
@@ -591,7 +591,8 @@ function! s:recursive_search_cmd(cmd_name)
 		\ a:cmd_name == 'rg' ||
 		\ a:cmd_name == 'ack' ||
 		\ a:cmd_name == 'git' ||
-		\ a:cmd_name == 'pt'
+		\ a:cmd_name == 'pt' ||
+		\ a:cmd_name == 'ucg'
 endfunction
 
 " formFullCmd()
