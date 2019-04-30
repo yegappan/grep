@@ -438,11 +438,10 @@ function! s:runGrepCmdAsync(cmd, pattern, action)
     endif
 
     let title = '[Search results for ' . a:pattern . ']'
-    if a:action == 'add'
-	caddexpr title . "\n"
-    else
-	cexpr title . "\n"
+    if a:action == 'set'
+    call setqflist([], 'r')
     endif
+    caddexpr title . "\n"
     "caddexpr 'Search cmd: "' . a:cmd . '"'
     call setqflist([], 'a', {'title' : title})
     " Save the quickfix list id, so that the grep output can be added to
