@@ -441,7 +441,7 @@ function! s:runGrepCmdAsync(cmd, pattern, action)
     if a:action == 'add'
 	caddexpr title . "\n"
     else
-	cexpr title . "\n"
+	cgetexpr title . "\n"
     endif
     "caddexpr 'Search cmd: "' . a:cmd . '"'
     call setqflist([], 'a', {'title' : title})
