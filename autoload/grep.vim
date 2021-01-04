@@ -1,14 +1,14 @@
 " File: grep.vim
 " Author: Yegappan Lakshmanan (yegappan AT yahoo DOT com)
 " Version: 2.2
-" Last Modified: May 27, 2018
+" Last Modified: June 14, 2020
 " 
 " Plugin to integrate grep like utilities with Vim
 " Supported utilities are: grep, fgrep, egrep, agrep, findstr, ag, ack,
 " ripgrep, git grep, sift, platinum searcher and universal code grep.
 "
 " License: MIT License
-" Copyright (c) 2002-2018 Yegappan Lakshmanan
+" Copyright (c) 2002-2020 Yegappan Lakshmanan
 "
 " Permission is hereby granted, free of charge, to any person obtaining a copy
 " of this software and associated documentation files (the "Software"), to
@@ -345,16 +345,16 @@ let s:cmdTable = {
 
 " warnMsg
 " Display a warning message
-function! s:warnMsg(msg)
+func! s:warnMsg(msg) abort
     echohl WarningMsg | echomsg a:msg | echohl None
-endfunction
+endfunc
 
 let s:grep_cmd_job = 0
 let s:grep_tempfile = ''
 
 " deleteTempFile()
 " Delete the temporary file created on MS-Windows to run the grep command
-function! s:deleteTempFile()
+func! s:deleteTempFile() abort
     if has('win32') && !has('win32unix') && (&shell =~ 'cmd.exe')
 	if exists('s:grep_tempfile') && s:grep_tempfile != ''
 	    " Delete the temporary cmd file created on MS-Windows
@@ -362,11 +362,11 @@ function! s:deleteTempFile()
 	    let s:grep_tempfile = ''
 	endif
     endif
-endfunction
+endfunc
 
 " grep#cmd_output_cb()
 " Add output (single line) from a grep command to the quickfix list
-function! grep#cmd_output_cb(qf_id, channel, msg)
+func! grep#cmd_output_cb(qf_id, channel, msg) abort
     let job = ch_getjob(a:channel)
     if job_status(job) == 'fail'
 	call s:warnMsg('Error: Job not found in grep command output callback')
@@ -391,12 +391,12 @@ function! grep#cmd_output_cb(qf_id, channel, msg)
 	caddexpr a:msg . "\n"
 	let &efm = old_efm
     endif
-endfunction
+endfunc
 
 " grep#chan_close_cb
 " Close callback for the grep command channel. No more grep output is
 " available.
-function! grep#chan_close_cb(qf_id, channel)
+func! grep#chan_close_cb(qf_id, channel) abort
     let job = ch_getjob(a:channel)
     if job_status(job) == 'fail'
 	call s:warnMsg('Error: Job not found in grep channel close callback')
@@ -415,22 +415,22 @@ function! grep#chan_close_cb(qf_id, channel)
     else
 	caddexpr emsg
     endif
-endfunction
+endfunc
 
 " grep#cmd_exit_cb()
 " grep command exit handler
-function! grep#cmd_exit_cb(qf_id, job, exit_status)
+func! grep#cmd_exit_cb(qf_id, job, exit_status) abort
     " Process the exit status only if the grep cmd is not interrupted
     " by another grep invocation
     if s:grep_cmd_job == a:job
 	let s:grep_cmd_job = 0
 	call s:deleteTempFile()
     endif
-endfunction
+endfunc
 
 " runGrepCmdAsync()
 " Run the grep command asynchronously
-function! s:runGrepCmdAsync(cmd, pattern, action)
+func! s:runGrepCmdAsync(cmd, pattern, action) abort
     if s:grep_cmd_job isnot 0
 	" If the job is already running for some other search, stop it.
 	call job_stop(s:grep_cmd_job)
@@ -477,11 +477,11 @@ function! s:runGrepCmdAsync(cmd, pattern, action)
 	" Open the quickfix window below the current window
 	botright copen
     endif
-endfunction
+endfunc
 
 " runGrepCmd()
 " Run the specified grep command using the supplied pattern
-function! s:runGrepCmd(cmd, pattern, action)
+func! s:runGrepCmd(cmd, pattern, action) abort
     if has('win32') && !has('win32unix') && (&shell =~ 'cmd.exe')
 	" Windows does not correctly deal with commands that have more than 1
 	" set of double quotes.  It will strip them all resulting in:
@@ -548,7 +548,7 @@ function! s:runGrepCmd(cmd, pattern, action)
     endif
 
     call delete(tmpfile)
-endfunction
+endfunc
 
 " parseArgs()
 " Parse arguments to the grep command. The expected order for the various
@@ -557,7 +557,7 @@ endfunction
 " grep command-line flags are specified using the "-flag" format.
 " the next argument is assumed to be the pattern.
 " and the next arguments are assumed to be filenames or file patterns.
-function! s:parseArgs(cmd_name, args)
+func! s:parseArgs(cmd_name, args) abort
     let cmdopt = ''
     let pattern = ''
     let filepattern = ''
@@ -582,23 +582,23 @@ function! s:parseArgs(cmd_name, args)
     endfor
 
     return [cmdopt, pattern, filepattern]
-endfunction
+endfunc
 
 " recursive_search_cmd
 " Returns TRUE if a command recursively searches by default.
-function! s:recursive_search_cmd(cmd_name)
+func! s:recursive_search_cmd(cmd_name) abort
     return a:cmd_name == 'ag' ||
 		\ a:cmd_name == 'rg' ||
 		\ a:cmd_name == 'ack' ||
 		\ a:cmd_name == 'git' ||
 		\ a:cmd_name == 'pt' ||
 		\ a:cmd_name == 'ucg'
-endfunction
+endfunc
 
 " formFullCmd()
 " Generate the full command to run based on the user supplied command name,
 " options, pattern and file names.
-function! s:formFullCmd(cmd_name, useropts, pattern, filenames)
+func! s:formFullCmd(cmd_name, useropts, pattern, filenames) abort
     if !has_key(s:cmdTable, a:cmd_name)
 	call s:warnMsg('Error: Unsupported command ' . a:cmd_name)
 	return ''
@@ -635,11 +635,11 @@ function! s:formFullCmd(cmd_name, useropts, pattern, filenames)
     endif
 
     return fullcmd
-endfunction
+endfunc
 
 " getListOfBufferNames()
 " Get the file names of all the listed and valid buffer names 
-function! s:getListOfBufferNames()
+func! s:getListOfBufferNames() abort
     let filenames = ''
 
     " Get a list of all the buffer names
@@ -657,11 +657,11 @@ function! s:getListOfBufferNames()
     endfor
 
     return filenames
-endfunction
+endfunc
 
 " getListOfArgFiles()
 " Get the names of all the files in the argument list
-function! s:getListOfArgFiles()
+func! s:getListOfArgFiles() abort
     let filenames = ''
 
     let arg_cnt = argc()
@@ -672,11 +672,11 @@ function! s:getListOfArgFiles()
     endif
 
     return filenames
-endfunction
+endfunc
 
 " grep#runGrepRecursive()
 " Run specified grep command recursively
-function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
+func! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...) abort
     if a:0 > 0 && (a:1 == '-?' || a:1 == '-h')
 	echo 'Usage: ' . a:cmd_name . ' [<options>] [<search_pattern> ' .
 		    \ '[<file_name(s)>]]'
@@ -792,12 +792,12 @@ function! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...)
     endif
 
     call s:runGrepCmd(cmd, pattern, a:action)
-endfunction
+endfunc
 
 " grep#runGrepSpecial()
 " Search for a pattern in all the opened buffers or filenames in the
 " argument list
-function! grep#runGrepSpecial(cmd_name, which, action, ...)
+func! grep#runGrepSpecial(cmd_name, which, action, ...) abort
     if a:0 > 0 && (a:1 == '-?' || a:1 == '-h')
 	echo 'Usage: ' . a:cmd_name . ' [<options>] [<search_pattern>]'
 	return
@@ -845,11 +845,11 @@ function! grep#runGrepSpecial(cmd_name, which, action, ...)
     " Form the complete command line and run it
     let cmd = s:formFullCmd(grep_cmd, opts, pattern, filenames)
     call s:runGrepCmd(cmd, pattern, a:action)
-endfunction
+endfunc
 
 " grep#runGrep()
 " Run the specified grep command
-function! grep#runGrep(cmd_name, grep_cmd, action, ...)
+func! grep#runGrep(cmd_name, grep_cmd, action, ...) abort
     if a:0 > 0 && (a:1 == '-?' || a:1 == '-h')
 	echo 'Usage: ' . a:cmd_name . ' [<options>] [<search_pattern> ' .
 		    \ '[<file_name(s)>]]'
@@ -882,7 +882,7 @@ function! grep#runGrep(cmd_name, grep_cmd, action, ...)
     " Form the complete command line and run it
     let cmd = s:formFullCmd(a:grep_cmd, opts, pattern, filenames)
     call s:runGrepCmd(cmd, pattern, a:action)
-endfunction
+endfunc
 
 " restore 'cpo'
 let &cpo = s:cpo_save
