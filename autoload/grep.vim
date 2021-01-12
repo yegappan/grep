@@ -570,7 +570,7 @@ func! s:parseArgs(cmd_name, args) abort
 	    let cmdopt = cmdopt . ' ' . one_arg
 	elseif pattern == ''
 	    " Only one search pattern can be specified
-	    let pattern = shellescape(one_arg)
+	    let pattern = one_arg
 	else
 	    " More than one file patterns can be specified
 	    if filepattern != ''
@@ -693,7 +693,6 @@ func! grep#runGrepRecursive(cmd_name, grep_cmd, action, ...) abort
 	if pattern == ''
 	    return
 	endif
-	let pattern = shellescape(pattern)
 	echo "\r"
     endif
 
@@ -866,7 +865,6 @@ func! grep#runGrep(cmd_name, grep_cmd, action, ...) abort
 	if pattern == ''
 	    return
 	endif
-	let pattern = shellescape(pattern)
 	echo "\r"
     endif
 
